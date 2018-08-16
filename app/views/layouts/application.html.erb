@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HeyUrl</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag '//cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag '//cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js', 'data-turbolinks-track': 'reload' %>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-wrapper">
+        <a href="<%= root_path %>" class="brand-logo">HeyURL!</a>
+      </div>
+    </nav>
+    <main role="main" class="container">
+      <%= yield %>
+    </main>
+  </body>
+</html>

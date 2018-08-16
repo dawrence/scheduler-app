@@ -1,0 +1,118 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<div class="row">
+  <div class="col s12">
+    <ul class="card-panel collection with-header">
+      <li class="collection-header">
+        <h4>
+          Stats for <a href="https://heyurl.co/QY74T">https://heyurl.co/QY74T</a>
+        </h4>
+      </li>
+      <li class="collection-item">Created Mar 23, 2018</li>
+      <li class="collection-item">
+        Original URL: <a href="drive.google.com/file/d/1VdLgSSMojWFb1GRoBAFX_eXy7oX2J...">drive.google.com/file/d/1VdLgSSMojWFb1GRoBAFX_eXy7oX2J...</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col s12">
+    <div class="card-panel">
+      <div id="total-clicks-chart"></div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col s6">
+    <div class="card-panel">
+      <div id="platforms-chart"></div>
+    </div>
+  </div>
+
+  <div class="col s6">
+    <div class="card-panel">
+      <div id="browsers-chart"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  google.charts.load('current', {packages: ['corechart']});
+  google.charts.setOnLoadCallback(drawCharts);
+
+  function drawTotalClicksChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['day', 'clicks'],
+      ['1', 13],
+      ['2', 2],
+      ['3', 1],
+      ['4', 7],
+      ['5', 20],
+      ['6', 18],
+      ['7', 10],
+      ['8', 20],
+      ['9', 15],
+      ['10', 5],
+    ]);
+
+    var options = {
+      title: 'total clicks',
+      haxis: {
+        title: 'day of month'
+      },
+      vaxis: {
+        title: 'clicks'
+      }
+    };
+
+    var chart = new google.visualization.AreaChart(
+      document.getElementById('total-clicks-chart')
+    );
+    chart.draw(data, options);
+  }
+
+  function drawBrowsersChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['browser', 'clicks'],
+      ['IE', 13],
+      ['Firefox', 22],
+      ['Chrome', 17],
+      ['Safari', 7],
+    ]);
+
+    var options = {
+      title: 'Browsers'
+    };
+
+    var chart = new google.visualization.PieChart(
+      document.getElementById('browsers-chart')
+    );
+    chart.draw(data, options);
+  }
+
+  function drawPlatformsChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['platform', 'clicks'],
+      ['Windows', 13],
+      ['macOS', 22],
+      ['Ubuntu', 17],
+      ['Other', 7],
+    ]);
+
+    var options = {
+      title: 'Platform'
+    };
+
+    var chart = new google.visualization.PieChart(
+      document.getElementById('platforms-chart')
+    );
+    chart.draw(data, options);
+  }
+
+  function drawCharts() {
+    drawTotalClicksChart();
+    drawBrowsersChart();
+    drawPlatformsChart();
+  }
+ </script>
