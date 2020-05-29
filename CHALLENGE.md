@@ -20,7 +20,7 @@ Hey URL! is a service to create awesome friendly URLs to make it easier for peop
 * Any non-word character is not allowed e.g whitespaces, tab,% ,$.* etc
 * URL must be unique
 * Original URL format should be validated 
-* `shot_url` attribute should be stored only the generated code
+* `short_url` attribute should store only the generated code
 
 # Pages
 These mockup pages are already built into our site:
