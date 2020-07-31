@@ -4,22 +4,6 @@ function UrlList() {
   const [items, setItems] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(null);
-  const [visitError, setVisitError] = useState(null);
-
-  const visitUrl = (shortUrl, evt) => {
-    evt.preventDefault();
-    fetch(`/api/v1/${shortUrl}`)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          window.location.href =  result.data.attributes['original-url']
-        },
-
-        (error) => {
-          setVisitError(error);
-        }
-      )
-  }
 
   useEffect(() => {
     fetch("/api/v1/latest")
@@ -60,8 +44,7 @@ function UrlList() {
               return (
                 <tr key={item.id}>
                   <th scope="row">
-                    <a href={`${window.location.href.match(/^.*\//)}${item.attributes['short-url']}`}
-                       onClick={(e) => visitUrl(item.attributes['short-url'], e)}>
+                    <a href={`${window.location.href.match(/^.*\//)}${item.attributes['short-url']}`}>
                       {`${window.location.href.match(/^.*\//)}${item.attributes['short-url']}`}
                     </a>
                   </th>

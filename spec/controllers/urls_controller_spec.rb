@@ -3,39 +3,32 @@
 require 'rails_helper'
 
 RSpec.describe UrlsController, type: :controller do
-  describe 'GET #index' do
-    it 'shows the latest 10 URLs' do
-      skip 'add test'
-    end
-  end
+  describe '#visit' do
+    context 'url found' do
+      let!(:url) { FactoryBot.create(:url, clicks_count: 0) }
 
-  describe 'POST #create' do
-    it 'creates a new url' do
-      skip 'add test'
-    end
-  end
+      before do
+        get :visit, params: { url: url.short_url }
+      end
 
-  describe 'GET #show' do
-    it 'shows stats about the given URL' do
-      skip 'add test'
-    end
+      it 'increases click_counts' do
+        url.reload
+        expect(url.clicks_count).to eq(1)
+      end
 
-    it 'throws 404 when the URL is not found' do
-      skip 'add test'
-    end
-  end
+      it 'creates a new click for this url' do
+        expect(url.clicks.length).to eq(1)
+      end
 
-  describe 'GET #visit' do
-    it 'tracks click event and stores platform and browser information' do
-      skip 'add test'
-    end
-
-    it 'redirects to the original url' do
-      skip 'add test'
+      it 'redirects to the original url' do
+        expect(response.status).to eq(302)
+      end
     end
 
     it 'throws 404 when the URL is not found' do
-      skip 'add test'
+      expect{ get :visit, params: { url: 'someurl' } }.to(
+        raise_error(ActiveRecord::RecordNotFound)
+      )
     end
   end
 end

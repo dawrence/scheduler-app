@@ -9,10 +9,6 @@ module Api
         render json: @urls
       end
 
-      def index
-        # not useful
-      end
-
       def create
         @url = Url.new(safe_params)
         render json: @url if @url.save!
@@ -23,13 +19,8 @@ module Api
         render json: @url, include: 'clicks'
       end
 
-      def visit
-        @url = Url.find_by!(short_url: params[:url])
-
-        render json: @url, include: 'clicks', status: 302 if @url.perform_click!(
-          browser.name,
-          browser.platform
-        )
+      def stats
+        # TODO
       end
 
       def safe_params

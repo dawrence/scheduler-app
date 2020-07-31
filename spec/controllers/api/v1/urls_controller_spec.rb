@@ -46,38 +46,6 @@ RSpec.describe Api::V1::UrlsController, type: :controller do
       end
     end
 
-    describe '#visit' do
-      context 'url found' do
-        let!(:url) { FactoryBot.create(:url, clicks_count: 0) }
-
-        before do
-          get :visit, params: { url: url.short_url }
-        end
-
-        it 'increases click_counts' do
-          url.reload
-          expect(url.clicks_count).to eq(1)
-        end
-
-        it 'creates a new click for this url' do
-          expect(url.clicks.length).to eq(1)
-        end
-
-        it 'redirects to the original url' do
-          expect(response.status).to eq(302)
-          expect(data['attributes']['clicks-count']).to eq(1)
-          expect(data['attributes']['clicks'].length).to eq(1)
-          expect(data['attributes']['clicks'].length).to eq(1)
-        end
-      end
-
-      it 'throws 404 when the URL is not found' do
-        get :visit, params: { url: 'someurl' }
-
-        expect(response.status).to eq(404)
-      end
-    end
-
     describe 'GET #show' do
       let!(:url) { FactoryBot.create(:url) }
       let(:data) { json_body['data'] }
