@@ -5,4 +5,12 @@ Rails.application.routes.draw do
 
   resources :urls, only: %i[index create show], param: :url
   get ':url', to: 'urls#visit', as: :visit
+
+  namespace :api do
+    namespace :v1 do
+      resources :urls, only: %i[index create show], param: :url
+      get 'latest', to: 'urls#latest'
+      get ':url', to: 'urls#visit', as: :visit
+    end
+  end
 end
