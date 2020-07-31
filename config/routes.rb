@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :urls, only: %i[latest create show], param: :url
       get 'latest', to: 'urls#latest'
+      get 'stats/:url', to: 'urls#stats'
     end
   end
 end

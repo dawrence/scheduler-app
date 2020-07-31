@@ -4,9 +4,16 @@ import UrlList from './UrlList'
 class UrlForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { originalUrl: '' };
+    this.state = {
+      originalUrl: '',
+      urls: null,
+      error: null,
+      urlsLoaded: false,
+    };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.fetchItems = this.fetchItems.bind(this);
+
   }
 
   handleSubmit() {
@@ -19,7 +26,36 @@ class UrlForm extends React.Component {
         .then(response => response.json())
         .then(data => this.setState({ originalUrl: '' }));
     event.preventDefault();
+    this.setState({
+      urls: null,
+      urlsLoaded: false
+    })
+    this.fetchItems();
     this.forceUpdate();
+  }
+
+  componentDidMount(){
+    this.fetchItems();
+  }
+
+  fetchItems(){
+    fetch("/api/v1/latest")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            urls: result.data,
+            urlsLoaded: true
+          })
+        },
+
+        (error) => {
+          this.setState({
+            error: error,
+            urlsLoaded: false
+          })
+        }
+      )
   }
 
   handleChange(evt) {
@@ -27,6 +63,7 @@ class UrlForm extends React.Component {
   }
 
   render() {
+    console.log(this.state);
     return (
       <>
         <div className="row">
@@ -56,7 +93,7 @@ class UrlForm extends React.Component {
             </form>
           </div>
         </div>
-        <UrlList />
+        <UrlList items={this.state.urls} error={this.state.error} itemsLoaded={this.state.urlsLoaded} />
       </>
     );
   }

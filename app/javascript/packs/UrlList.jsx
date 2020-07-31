@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react'
+import Stats from './Stats'
 
-function UrlList() {
-  const [items, setItems] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [error, setError] = useState(null);
+function UrlList(props) {
+  const items = props.items;
+  const isLoaded = props.itemsLoaded;
+  const [error, setError] = useState(props.error);
+  const [stats, setStats] = useState(null);
 
-  useEffect(() => {
-    fetch("/api/v1/latest")
+  const showStats = (e, shortUrl) => {
+    e.preventDefault();
+    fetch(`api/v1/stats/${shortUrl}`)
       .then(res => res.json())
-      .then(
-        (result) => {
-          setIsLoaded(true);
-          setItems(result.data);
-        },
+      .then((result) => {
+        setStats(result.data);
+        is
+      },
 
-        (error) => {
-          setIsLoaded(true);
-          setError(error);
-        }
-      )
-  }, [])
+      (error) => {
+        setStats(null);
+        setError(error);
+      })
+  };
 
   if(error) {
     return <div>Error: {error.message}</div>;
@@ -60,7 +61,8 @@ function UrlList() {
                     { item.attributes['clicks-count'] }
                   </td>
                   <td>
-                    <a href={`/${item.attributes['short-url']}/stats`}>
+                    <a href={`/${item.attributes['short-url']}/stats`}
+                       onClick={ (e) => { showStats(e, item.attributes['short-url'])} }>
                       <svg className="octicon octicon-graph"
                           viewBox="0 0 16 16"
                           version="1.1"
@@ -70,6 +72,7 @@ function UrlList() {
                         <path fillRule="evenodd" d="M16 14v1H0V0h1v14h15zM5 13H3V8h2v5zm4 0H7V3h2v10zm4 0h-2V6h2v7z"></path>
                       </svg>
                     </a>
+                    <Stats stats={stats}/>
                   </td>
                 </tr>
               );

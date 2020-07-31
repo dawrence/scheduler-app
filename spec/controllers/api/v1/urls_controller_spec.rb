@@ -48,10 +48,10 @@ RSpec.describe Api::V1::UrlsController, type: :controller do
 
     describe 'GET #show' do
       let!(:url) { FactoryBot.create(:url) }
-      let(:data) { json_body['data'] }
-      let(:stats) { data['relationships']['metrics']['data'] }
+      let!(:click) { FactoryBot.create(:click, url_id: url.id) }
 
-      # create stats
+      let(:data) { json_body['data'] }
+      let(:stats) { data['relationships']['clicks']['data'] }
 
       context 'with a given url' do
         before do
@@ -65,9 +65,9 @@ RSpec.describe Api::V1::UrlsController, type: :controller do
           expect(data['attributes']['url']).to include(url.short_url)
         end
 
-        xit 'shows stats about the given URL' do
+        it 'shows stats about the given URL' do
           expect(response.status).to eq(200)
-          expect(stats.size).to be > 1
+          expect(stats.length).to be > 0
         end
       end
 
@@ -89,17 +89,54 @@ RSpec.describe Api::V1::UrlsController, type: :controller do
     end
   end
 
-  xdescribe 'GET #stats' do
-    it 'tracks click event and stores platform and browser information' do
-      skip 'add test'
+  describe 'GET #stats' do
+    let!(:url) { FactoryBot.create(:url) }
+    let!(:click_chrome) do
+      FactoryBot.create(
+        :click,
+        url_id: url.id,
+        created_at: Time.zone.now,
+        browser: 'Chrome',
+        platform: 'OS X'
+      )
+    end
+
+    let!(:click_firefox) do
+      FactoryBot.create(
+        :click,
+        url_id: url.id,
+        created_at: Time.zone.now,
+        browser: 'Firefox',
+        platform: 'Windows'
+      )
+    end
+
+    let!(:click_safari) do
+      FactoryBot.create(
+        :click,
+        url_id: url.id,
+        created_at: Time.zone.now + 1.day,
+        browser: 'Safari',
+        platform: 'OS X'
+      )
+    end
+
+    let(:stats) { url.stats }
+
+    before do
+      get :stats, params: { url: url.short_url }
+    end
+
+    it 'return number of clicks per day' do
+      expect(json_body['clicks_per_day']).to eq (2)
     end
 
     it 'redirects to the original url' do
-      skip 'add test'
+      expect(json_body['browsers']).to eq ('Chrome, Firefox, Safari')
     end
 
     it 'throws 404 when the URL is not found' do
-      skip 'add test'
+      expect(json_body['platforms']).to eq ('OS X, Windows')
     end
   end
 end

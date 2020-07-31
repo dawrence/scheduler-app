@@ -55,4 +55,51 @@ RSpec.describe Url, type: :model do
       expect(Url.latest.length).to be > 0
     end
   end
+
+  describe '#stats' do
+    let!(:url) { FactoryBot.create(:url) }
+    let!(:click_chrome) do
+      FactoryBot.create(
+        :click,
+        url_id: url.id,
+        created_at: Time.zone.now,
+        browser: 'Chrome',
+        platform: 'OS X'
+      )
+    end
+
+    let!(:click_firefox) do
+      FactoryBot.create(
+        :click,
+        url_id: url.id,
+        created_at: Time.zone.now,
+        browser: 'Firefox',
+        platform: 'Windows'
+      )
+    end
+
+    let!(:click_safari) do
+      FactoryBot.create(
+        :click,
+        url_id: url.id,
+        created_at: Time.zone.now + 1.day,
+        browser: 'Safari',
+        platform: 'OS X'
+      )
+    end
+
+    let(:stats) { url.stats }
+
+    it '#clicks_per_day' do
+      expect(stats[:clicks_per_day]).to eq(2)
+    end
+
+    it '#browsers' do
+      expect(stats[:browsers]).to eq('Chrome, Firefox, Safari')
+    end
+
+    it '#platforms' do
+      expect(stats[:platforms]).to eq('OS X, Windows')
+    end
+  end
 end

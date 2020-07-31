@@ -28,7 +28,27 @@ class Url < ApplicationRecord
     update_attributes!(clicks_count: clicks_count + 1)
   end
 
+  def stats
+    {
+      clicks_per_day: clicks_per_day,
+      browsers: browsers,
+      platforms: platforms
+    }
+  end
+
   private
+
+  def clicks_per_day
+    clicks.today.count
+  end
+
+  def browsers
+    clicks.map(&:browser).uniq.join(', ')
+  end
+
+  def platforms
+    clicks.map(&:platform).uniq.join(', ')
+  end
 
   def create_short_url
     update_attribute(:short_url, Encoder.encode(id))

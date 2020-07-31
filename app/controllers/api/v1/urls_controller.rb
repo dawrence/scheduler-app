@@ -20,7 +20,8 @@ module Api
       end
 
       def stats
-        # TODO
+        @url = Url.find_by!(short_url: params[:url])
+        render json: @url.stats
       end
 
       def safe_params
