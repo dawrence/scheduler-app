@@ -1,6 +1,6 @@
-# HeyURL! Code Challenge
+# SCHEDULER
 
-## HeyURL! Code Challenge 
+## SCHEDULER
 This repository has been created as a code challenge for candidates with FullStack Labs. The candidate will clone and setup an existing Django application. The application will contain routes, migrations, models, and minimal views but with no actual functionality created. The candidate will show all her/his expertise building apps with the Django framework and problem solving skills.
 
 ## Overview

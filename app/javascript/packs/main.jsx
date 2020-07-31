@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import UrlForm from './UrlForm'
+import AppScheduler from './AppScheduler'
 import PropTypes from 'prop-types'
 
 class Main extends React.Component {
@@ -10,7 +10,7 @@ class Main extends React.Component {
 
   render(){
     return (
-      <UrlForm name="React" />
+      <AppScheduler name="AppScheduler" />
     )
   }
 }

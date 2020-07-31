@@ -10,27 +10,51 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_16_185151) do
+ActiveRecord::Schema.define(version: 2020_12_12_070855) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "clicks", force: :cascade do |t|
+  create_table "appointments", force: :cascade do |t|
+    t.integer "instructor_id"
+    t.integer "vehicle_id"
+    t.integer "student_id"
+    t.datetime "start_at"
+    t.datetime "end_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "url_id"
-    t.string "browser", null: false
-    t.string "platform", null: false
-    t.index ["url_id"], name: "index_clicks_on_url_id"
+    t.string "title"
   end
 
-  create_table "urls", force: :cascade do |t|
-    t.datetime "created_at", default: -> { "now()" }, null: false
-    t.datetime "updated_at", default: -> { "now()" }, null: false
-    t.string "short_url"
-    t.string "original_url", null: false
-    t.integer "clicks_count", default: 0
+  create_table "instructors", force: :cascade do |t|
+    t.string "full_name", null: false
+    t.string "id_number", null: false
+    t.string "email"
+    t.string "phone"
+    t.integer "available_hours", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "clicks", "urls"
+  create_table "students", force: :cascade do |t|
+    t.string "full_name", null: false
+    t.string "email"
+    t.string "phone"
+    t.string "license_type"
+    t.integer "age"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "id_number", null: false
+  end
+
+  create_table "vehicles", force: :cascade do |t|
+    t.string "plate", null: false
+    t.string "status"
+    t.integer "available_hours", default: 0
+    t.string "type", default: "car", null: false
+    t.json "additional_data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
 end
