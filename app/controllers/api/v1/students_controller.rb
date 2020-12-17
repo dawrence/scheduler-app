@@ -10,17 +10,20 @@ module Api
       end
 
       def create
-      end
-
-      def show
-
+        student = Student.create!(safe_params)
+        render json: student
       end
 
       def update
+        student = Student.find_by!(id: params[:id])
+        student.update(safe_params)
+        render json: student
       end
 
       def safe_params
-        params.require(:appointment).permit!(:instructor_id)
+        params.require(:student)
+              .permit!(:full_name, :email, :phone,
+                       :license_type, :age, :id_number)
       end
     end
   end

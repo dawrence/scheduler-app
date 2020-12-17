@@ -12,18 +12,20 @@ module Api
       end
 
       def create
+        vehicle = Vehicle.create!(safe_params)
 
-      end
-
-      def show
-
+        render json: vehicle
       end
 
       def update
+        vehicle = Vehicle.find_by(id: params[:id])
+        vehicle.update!(safe_params)
+
+        render json: vehicle
       end
 
       def safe_params
-        params.require(:appointment).permit!(:instructor_id)
+        params.require(:vehicle).permit!(:type, :plate, :available_hours, :status)
       end
     end
   end

@@ -10,6 +10,8 @@ module Api
       end
 
       def create
+        instructor = Instructor.create!(safe_params)
+        render json: instructor
       end
 
       def show
@@ -17,10 +19,17 @@ module Api
       end
 
       def update
+        instructor = Instructor.find_by!(id: params[:id])
+        instructor.update(safe_params)
+        render json: instructor
       end
 
       def safe_params
-        params.require(:appointment).permit!(:instructor_id)
+        params.require(:instructor)
+              .permit!(
+                :full_name, :email,
+                :phone, :available_hours,
+                :id_number)
       end
     end
   end
