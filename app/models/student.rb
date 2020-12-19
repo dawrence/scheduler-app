@@ -1,7 +1,8 @@
 class Student < ApplicationRecord
   has_many :appointments
 
-  validate :license_type, inclusion: { in: %w[a2 b1 c1] }
+  validates :license_type, inclusion: { in: %w[a2 b1 c1] }
+  validates_uniqueness_of :id_number
 
   AVAILABLE_HOURS = {
     a2: 16,
@@ -10,6 +11,17 @@ class Student < ApplicationRecord
   }.freeze
 
   before_save :set_available_hours
+
+
+  def self.without_appointments(start_time, end_time)
+    start_date = start_time.utc
+    end_date = end_time.utc
+    student_with_app_ids = Student.joins(:appointments)
+                                  .where("appointments.start_at BETWEEN '#{start_date}' AND '#{end_date}'")
+                                  .uniq
+                                  .pluck(:id)
+    Student.where.not(id: student_with_app_ids)
+  end
 
   def set_available_hours
     self.available_hours = AVAILABLE_HOURS[license_type.to_sym] || 0

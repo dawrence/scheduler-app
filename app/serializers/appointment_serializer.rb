@@ -5,10 +5,6 @@ class AppointmentSerializer < ActiveModel::Serializer
   belongs_to :student
   belongs_to :vehicle
 
-  def title
-    'example'
-  end
-
   def startDate
     object.start_at
   end

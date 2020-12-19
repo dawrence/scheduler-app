@@ -2,7 +2,7 @@ import * as React from 'react';
 import  { useState, useEffect } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Radio from '@material-ui/core/Radio';
-import moment from 'moment'
+import moment from 'moment';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import MoreIcon from '@material-ui/icons/MoreVert';
@@ -159,6 +159,8 @@ export default class AppScheduler extends React.PureComponent {
     this.state = {
       currentDate: moment(),
       visible: false,
+      filterType: null,
+      filterValue: null,
       data: [],
       currentViewName: 'Month',
       appointmentMeta: {
@@ -175,6 +177,7 @@ export default class AppScheduler extends React.PureComponent {
     this.currentViewNameChange = this.currentViewNameChange.bind(this);
     this.onAppointmentMetaChange = this.onAppointmentMetaChange.bind(this);
     this.myAppointment = this.myAppointment.bind(this);
+    this.handleFilter = this.handleFilter.bind(this);
   }
 
   toggleVisibility(){
@@ -220,18 +223,23 @@ export default class AppScheduler extends React.PureComponent {
   }
 
   updateAppointment(params) {
+    const appt_id = Object.keys(params)[0]
     const requestOptions = {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params)
+        body: JSON.stringify(params[appt_id])
     };
-    return fetch('/api/v1/appointments', requestOptions).then(response => response.json())
+    return fetch(`/api/v1/appointments/${appt_id}`, requestOptions).then(response => response.json())
   }
 
   fetchAppointments(){
     const startOfMonth = encodeURIComponent(moment().startOf('month').format('YYYY-MM-DD hh:mm'));
     const endOfMonth   = encodeURIComponent(moment().endOf('month').format('YYYY-MM-DD hh:mm'));
-    fetch(`/api/v1/appointments?start_at=${startOfMonth}&end_at=${endOfMonth}`)
+    let url = `/api/v1/appointments?start_at=${startOfMonth}&end_at=${endOfMonth}`;
+    if(this.state.filterType && this.state.filterValue) {
+      url = url+`&filter_type=${this.state.filterType}&filter_value=${this.state.filterValue}`
+    }
+    fetch(url)
       .then(res => res.json())
       .then(
         (result) => {
@@ -246,6 +254,12 @@ export default class AppScheduler extends React.PureComponent {
           })
         }
       )
+  }
+
+  handleFilter(ev, type) {
+    const value = ev.target.value;
+    this.setState({ filterType: type, filterValue: value })
+    this.fetchAppointments();
   }
 
   myAppointment(props) {
@@ -263,7 +277,7 @@ export default class AppScheduler extends React.PureComponent {
 
     return (
       <>
-        <Filter />
+        <Filter filter={this.handleFilter}/>
         <React.Fragment>
           <ExternalViewSwitcher
             currentViewName={currentViewName}
@@ -298,10 +312,10 @@ export default class AppScheduler extends React.PureComponent {
               />
               <AppointmentTooltip
                 showCloseButton
+                showOpenButton
                 visible={visible}
                 contentComponent={Content}
                 commandButtonComponent={CommandButton}
-                showCloseButton
                 onVisibilityChange={this.toggleVisibility}
                 appointmentMeta={appointmentMeta}
                 onAppointmentMetaChange={this.onAppointmentMetaChange}
