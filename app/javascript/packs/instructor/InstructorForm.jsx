@@ -11,7 +11,7 @@ class InstructorForm extends React.Component {
         id_number: '',
         email: '',
         phone: '',
-        available_hours: 16
+        available_hours: 10
       },
       error: null,
       instructors: [],
@@ -77,7 +77,6 @@ class InstructorForm extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     return (
       <>
         <div className="row">
@@ -126,10 +125,11 @@ class InstructorForm extends React.Component {
                                 className='validate form-control'
                                 placeholder="Telefono"/>
 
-                          <label htmlFor="phone">Horas Disponibles</label>
+                          <label htmlFor="available_hours">Horas Disponibles</label>
                           <input type='number'
+                                name='available_hours'
                                 value={ this.state.instructor.available_hours }
-                                onChange={()=>{}}
+                                onChange={this.handleChange}
                                 className='validate form-control'
                                 placeholder="Horas disponibles" />
                         </div>

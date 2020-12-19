@@ -72,7 +72,11 @@ class Filter extends React.Component {
           <div className='col m4'>
             <div className='form-group'>
               <label htmlFor="vehicle">Filtrar por vehiculo</label>
-              <select name="vehicle" className="form-control" id="vehicle" onChange={(ev) => { this.props.filter(ev, 'vehicle') }}>
+              <select name="vehicle" className="form-control"
+                      id="vehicle"
+                      defaultValue='-1'
+                      onChange={(ev) => { this.props.filter(ev, 'vehicle') }}>
+                <option disable='true' value='-1'> -- Vehículo --</option>
                 { vehicleOptions.length > 0 && vehicleOptions.map(item => {
                   return (
                     <option key={`vhcl-${item.id}`} value={item.id}>{item.text}</option>
@@ -84,7 +88,11 @@ class Filter extends React.Component {
           <div className='col m4'>
             <div className='form-group'>
               <label htmlFor="student">Filtrar por Estudiante</label>
-              <select name="student" className="form-control" id="vehicle" onChange={(ev) => { this.props.filter(ev, 'student') }}>
+              <select name="student" className="form-control"
+                      id="vehicle"
+                      defaultValue='-1'
+                      onChange={(ev) => { this.props.filter(ev, 'student') }}>
+                <option disable='true' value='-1'> -- Estudiante --</option>
                 { studentOptions.length > 0 && studentOptions.map(item => {
                   return (
                     <option key={`stdt-${item.id}`} value={item.id}>{item.text}</option>
@@ -96,7 +104,11 @@ class Filter extends React.Component {
           <div className='col m4'>
             <div className='form-group'>
               <label htmlFor="instructor">Filtrar por Instructor</label>
-              <select key={'instru'} name="instructor" className="form-control" id="vehicle" onChange={(ev) => { this.props.filter(ev, 'instructor') }}>
+              <select key={'instru'} name="instructor"
+                      className="form-control" id="vehicle"
+                      defaultValue='-1'
+                      onChange={(ev) => { this.props.filter(ev, 'instructor') }}>
+                <option disable='true' value='-1'> -- Instructor --</option>
                 { instructorOptions.length > 0 && instructorOptions.map(item => {
                   return (
                     <option key={`inst-${item.id}`} value={item.id}>{item.text}</option>

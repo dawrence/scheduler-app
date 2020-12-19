@@ -10,8 +10,8 @@ module Api
       end
 
       def available
-        start_time = Time.zone.strptime(CGI.unescape(params[:start_at]), '%d/%m/%Y %I:%M %p')
-        end_time = Time.zone.strptime(CGI.unescape(params[:end_at]), '%d/%m/%Y %I:%M %p')
+        start_time = Time.strptime(CGI.unescape(params[:start_at]), '%d/%m/%Y %I:%M %p')
+        end_time = Time.strptime(CGI.unescape(params[:end_at]), '%d/%m/%Y %I:%M %p')
         @students = Student.without_appointments(start_time, end_time)
                               .order(created_at: :desc)
         render json: @students

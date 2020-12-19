@@ -232,12 +232,13 @@ export default class AppScheduler extends React.PureComponent {
     return fetch(`/api/v1/appointments/${appt_id}`, requestOptions).then(response => response.json())
   }
 
-  fetchAppointments(){
+  fetchAppointments(filterValue = null, filterType = null){
     const startOfMonth = encodeURIComponent(moment().startOf('month').format('YYYY-MM-DD hh:mm'));
     const endOfMonth   = encodeURIComponent(moment().endOf('month').format('YYYY-MM-DD hh:mm'));
+
     let url = `/api/v1/appointments?start_at=${startOfMonth}&end_at=${endOfMonth}`;
-    if(this.state.filterType && this.state.filterValue) {
-      url = url+`&filter_type=${this.state.filterType}&filter_value=${this.state.filterValue}`
+    if(filterType && filterValue) {
+      url = url+`&filter_type=${filterType}&filter_value=${filterValue}`
     }
     fetch(url)
       .then(res => res.json())
@@ -256,10 +257,10 @@ export default class AppScheduler extends React.PureComponent {
       )
   }
 
+  // check why isn't working with the state.
   handleFilter(ev, type) {
     const value = ev.target.value;
-    this.setState({ filterType: type, filterValue: value })
-    this.fetchAppointments();
+    this.fetchAppointments(value, type);
   }
 
   myAppointment(props) {
