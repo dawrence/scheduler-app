@@ -18,7 +18,7 @@ module Api
                       end
         filter_value = params[:filter_value]
 
-        @appointments = Appointment.where(start_at: start_at..end_at)
+        @appointments = Appointment.all
 
         if filter_type && filter_value
           @appointments = @appointments.where(filter_type => filter_value)
