@@ -246,7 +246,7 @@ export default class AppScheduler extends React.PureComponent {
     return fetch(`/api/v1/appointments/${appt_id}`, requestOptions).then(response => response.json())
   }
 
-  fetchAppointments(filterValue = null, filterType = null, currentDate=moment()){
+  fetchAppointments(filterValue = null, filterType = null, currentDate=this.state.currentDate){
     const startOfMonth = encodeURIComponent(moment(currentDate).startOf('month').format('YYYY-MM-DD hh:mm'));
     const endOfMonth   = encodeURIComponent(moment(currentDate).endOf('month').format('YYYY-MM-DD hh:mm'));
 
