@@ -4,16 +4,10 @@ module Api
   module V1
     # :nodoc:
     class InstructorsController < ApiController
+      include Available
+
       def index
         @instructors = Instructor.all.order(created_at: :desc)
-        render json: @instructors
-      end
-
-      def available
-        start_time = Time.strptime(CGI.unescape(params[:start_at]), '%d/%m/%Y %I:%M %p')
-        end_time = Time.strptime(CGI.unescape(params[:end_at]), '%d/%m/%Y %I:%M %p')
-        @instructors = Instructor.without_appointments(start_time, end_time)
-                              .order(created_at: :desc)
         render json: @instructors
       end
 
@@ -32,7 +26,12 @@ module Api
         params.require(:instructor)
               .permit(:full_name, :email,
                       :phone, :available_hours,
+                      :license_type,
                       :id_number)
+      end
+
+      def model
+        Instructor
       end
     end
   end

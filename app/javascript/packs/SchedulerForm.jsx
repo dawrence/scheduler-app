@@ -10,8 +10,8 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
   const [vehicles, setVehicles] = useState([])
   const [instructors, setInstructors] = useState([])
   const [students, setStudents] = useState([])
-  const start_date = moment(appointmentData.startDate).format('DD/MM/YYYY hh:mm A')
-  const end_date = moment(appointmentData.endDate).format('DD/MM/YYYY hh:mm A')
+  const start_date = moment(appointmentData.startDate).toISOString()
+  const end_date = moment(appointmentData.endDate).toISOString()
 
   const fetchVehicles=() => {
     fetch(`/api/v1/vehicles/available?start_at=${encodeURIComponent(start_date)}&end_at=${encodeURIComponent(end_date)}`)

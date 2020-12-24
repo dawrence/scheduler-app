@@ -28,6 +28,7 @@ function VehicleList(props) {
             <th scope="col">Tipo</th>
             <th scope="col">Estado</th>
             <th scope="col">Horas disponibles</th>
+            <th scope="col">Horas Asignadas</th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +46,9 @@ function VehicleList(props) {
                   </td>
                   <td>
                     <span>{item.available_hours}</span>
+                  </td>
+                  <td>
+                    <span>{item.assigned_hours}</span>
                   </td>
                 </tr>
               );

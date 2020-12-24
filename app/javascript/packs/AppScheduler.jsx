@@ -178,6 +178,7 @@ export default class AppScheduler extends React.PureComponent {
     this.onAppointmentMetaChange = this.onAppointmentMetaChange.bind(this);
     this.myAppointment = this.myAppointment.bind(this);
     this.handleFilter = this.handleFilter.bind(this);
+    this.onCurrentDateChange = this.onCurrentDateChange.bind(this);
   }
 
   toggleVisibility(){
@@ -207,10 +208,18 @@ export default class AppScheduler extends React.PureComponent {
 
     if(deleted !== undefined) {
       this.deleteAppoinment(deleted).then((response)=>{
-        this.setState(() => { [...data, { id: response.id, ...added}] } )
-        data = data.filter(appointment => appointment.id !== deleted);
+        this.fetchAppointments();
       })
     }
+  }
+
+  deleteAppoinment(params) {
+    const requestOptions = {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: ''
+    };
+    return fetch(`/api/v1/appointments/${params}`, requestOptions).then(response => response.json())
   }
 
   saveAppointment(params) {
@@ -220,6 +229,11 @@ export default class AppScheduler extends React.PureComponent {
         body: JSON.stringify(params)
     };
     return fetch('/api/v1/appointments', requestOptions).then(response => response.json())
+  }
+
+  onCurrentDateChange(params){
+    this.setState({ currentDate: params });
+    this.fetchAppointments(null, null, params);
   }
 
   updateAppointment(params) {
@@ -232,9 +246,9 @@ export default class AppScheduler extends React.PureComponent {
     return fetch(`/api/v1/appointments/${appt_id}`, requestOptions).then(response => response.json())
   }
 
-  fetchAppointments(filterValue = null, filterType = null){
-    const startOfMonth = encodeURIComponent(moment().startOf('month').format('YYYY-MM-DD hh:mm'));
-    const endOfMonth   = encodeURIComponent(moment().endOf('month').format('YYYY-MM-DD hh:mm'));
+  fetchAppointments(filterValue = null, filterType = null, currentDate=moment()){
+    const startOfMonth = encodeURIComponent(moment(currentDate).startOf('month').format('YYYY-MM-DD hh:mm'));
+    const endOfMonth   = encodeURIComponent(moment(currentDate).endOf('month').format('YYYY-MM-DD hh:mm'));
 
     let url = `/api/v1/appointments?start_at=${startOfMonth}&end_at=${endOfMonth}`;
     if(filterType && filterValue) {
@@ -291,6 +305,7 @@ export default class AppScheduler extends React.PureComponent {
             >
               <ViewState
                 defaultCurrentDate={this.state.currentDate}
+                onCurrentDateChange={this.onCurrentDateChange}
                 currentViewName={currentViewName}
               />
               <DayView
@@ -314,6 +329,7 @@ export default class AppScheduler extends React.PureComponent {
               <AppointmentTooltip
                 showCloseButton
                 showOpenButton
+                showDeleteButton
                 visible={visible}
                 contentComponent={Content}
                 commandButtonComponent={CommandButton}

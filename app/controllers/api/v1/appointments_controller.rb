@@ -18,7 +18,7 @@ module Api
                       end
         filter_value = params[:filter_value]
 
-        @appointments = Appointment.all
+        @appointments = Appointment.where(start_at: start_at..end_at)
 
         if filter_type && filter_value
           @appointments = @appointments.where(filter_type => filter_value)
@@ -71,6 +71,12 @@ module Api
         )
 
         render json: appointment
+      end
+
+      def destroy
+        appointment = Appointment.find_by(id: params[:id])
+        appointment.destroy!
+        render json: {}
       end
 
       private

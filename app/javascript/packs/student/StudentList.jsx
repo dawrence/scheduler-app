@@ -29,6 +29,7 @@ function StudentList(props) {
             <th scope="col">Email</th>
             <th scope="col">Telefono</th>
             <th scope="col">Horas disponibles</th>
+            <th scope="col">Horas Asignadas</th>
           </tr>
         </thead>
         <tbody>
@@ -49,6 +50,9 @@ function StudentList(props) {
                   </td>
                   <td>
                     <span>{item.available_hours}</span>
+                  </td>
+                  <td>
+                    <span>{item.assigned_hours}</span>
                   </td>
                 </tr>
               );

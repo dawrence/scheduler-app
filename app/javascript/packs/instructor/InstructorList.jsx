@@ -25,7 +25,9 @@ function InstructorList(props) {
             <th scope="col">Cedula</th>
             <th scope="col">Email</th>
             <th scope="col">Telefono</th>
+            <th scope="col">Tipo de Licencia</th>
             <th scope="col">Horas disponibles</th>
+            <th scope="col">Horas asignadas</th>
           </tr>
         </thead>
         <tbody>
@@ -45,7 +47,13 @@ function InstructorList(props) {
                     <span>{item.phone}</span>
                   </td>
                   <td>
+                    <span>{item.license_type}</span>
+                  </td>
+                  <td>
                     <span>{item.available_hours}</span>
+                  </td>
+                  <td>
+                    <span>{item.assigned_hours}</span>
                   </td>
                 </tr>
               );

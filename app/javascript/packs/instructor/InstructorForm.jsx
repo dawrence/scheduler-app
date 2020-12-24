@@ -11,6 +11,7 @@ class InstructorForm extends React.Component {
         id_number: '',
         email: '',
         phone: '',
+        license_type: '',
         available_hours: 10
       },
       error: null,
@@ -124,6 +125,16 @@ class InstructorForm extends React.Component {
                                 onChange={this.handleChange}
                                 className='validate form-control'
                                 placeholder="Telefono"/>
+
+                          <label htmlFor="licenseType">Tipo de licencia</label>
+                          <select name="license_type" className="form-control" id="licenseType" onChange={this.handleChange}>
+                            <option selected={this.state.instructor.license_type === 'a2'} value="a2">A2: Moto</option>
+                            <option selected={this.state.instructor.license_type === 'b1'} value="b1">B1: Vehiculo Particular</option>
+                            <option selected={this.state.instructor.license_type === 'c1'} value="c1">C1: Vehiculo Publico</option>
+                            <option selected={this.state.instructor.license_type === 'a2b1'} value="a2b1">A2 y B1</option>
+                            <option selected={this.state.instructor.license_type === 'b1c1'} value="b1c1">B1 y C1</option>
+                            <option selected={this.state.instructor.license_type === 'a2b1c1'} value="a2b1c1">A2, B1 y C1</option>
+                          </select>
 
                           <label htmlFor="available_hours">Horas Disponibles</label>
                           <input type='number'
