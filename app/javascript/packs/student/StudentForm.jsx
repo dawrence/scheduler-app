@@ -144,6 +144,8 @@ class StudentForm extends React.Component {
                             <option selected={this.state.student.license_type === 'a2'} value="a2">A2: Moto</option>
                             <option selected={this.state.student.license_type === 'b1'} value="b1">B1: Vehiculo Particular</option>
                             <option selected={this.state.student.license_type === 'c1'} value="c1">C1: Vehiculo Publico</option>
+                            <option selected={this.state.student.license_type === 'a2b1'} value="a2b1">A2 y B1</option>
+                            <option selected={this.state.student.license_type === 'a2c1'} value="a2c1">A2 y C1</option>
                           </select>
                           <input type='number'
                                 disabled={true}
@@ -163,7 +165,9 @@ class StudentForm extends React.Component {
             </form>
           </div>
         </div>
-        <StudentList items={this.state.students} error={this.state.error} itemsLoaded={this.state.loaded} selectItem={this.selectStudent} />
+        <div className="col-12" style={{overflow: 'auto'}}>
+          <StudentList items={this.state.students} error={this.state.error} itemsLoaded={this.state.loaded} selectItem={this.selectStudent} />
+        </div>
       </>
     );
   }

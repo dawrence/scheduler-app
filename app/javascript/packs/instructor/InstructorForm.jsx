@@ -80,8 +80,8 @@ class InstructorForm extends React.Component {
   render() {
     return (
       <>
-        <div className="row">
-          <div className="col m12">
+        <div className="col-12 row">
+          <div className="col-12">
             <form onSubmit={this.handleSubmit}>
               <div className="card">
                 <div className="card-content">
@@ -155,7 +155,9 @@ class InstructorForm extends React.Component {
             </form>
           </div>
         </div>
-        <InstructorList items={this.state.instructors} error={this.state.error} itemsLoaded={this.state.loaded} selectItem={this.selectInstructor}/>
+        <div className="col-12" style={{overflow: 'auto'}}>
+          <InstructorList items={this.state.instructors} error={this.state.error} itemsLoaded={this.state.loaded} selectItem={this.selectInstructor}/>
+        </div>
       </>
     );
   }

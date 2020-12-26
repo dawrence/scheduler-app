@@ -5,6 +5,8 @@ import InstructorForm from './instructor/InstructorForm'
 import StudentForm from './student/StudentForm'
 import VehicleForm from './vehicle/VehicleForm'
 
+import { Navbar, Nav } from 'react-bootstrap';
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -21,22 +23,17 @@ class Main extends React.Component {
     return (
       <Router>
         <div>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Calendario</Link>
-              </li>
-              <li>
-                <Link to="/students">Estudiantes</Link>
-              </li>
-              <li>
-                <Link to="/instructors">Instructores</Link>
-              </li>
-              <li>
-                <Link to="/vehicles">Vehiculos</Link>
-              </li>
-            </ul>
-          </nav>
+          <Navbar collapseOnSelect bg="light" expand="lg">
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+              <Nav className="mr-auto">
+                <Link className="nav-link" to="/">Calendario</Link>
+                <Link className="nav-link" to="/students">Estudiantes</Link>
+                <Link className="nav-link" to="/instructors">Instructores</Link>
+                <Link className="nav-link" to="/vehicles">Vehiculos</Link>
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
 
           {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}

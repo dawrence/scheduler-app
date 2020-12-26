@@ -28,6 +28,7 @@ function StudentList(props) {
             <th scope="col">Cedula</th>
             <th scope="col">Email</th>
             <th scope="col">Telefono</th>
+            <th scope="col">Licencia</th>
             <th scope="col">Horas disponibles</th>
             <th scope="col">Horas Asignadas</th>
           </tr>
@@ -47,6 +48,9 @@ function StudentList(props) {
                   </td>
                   <td>
                     <span>{item.phone}</span>
+                  </td>
+                  <td>
+                    <span>{item.license_type}</span>
                   </td>
                   <td>
                     <span>{item.available_hours}</span>
