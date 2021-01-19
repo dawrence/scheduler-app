@@ -22,6 +22,12 @@ module Api
         render json: instructor
       end
 
+      def destroy
+        instructor = Instructor.find_by!(id: params[:id])
+        instructor.destroy!
+        render json: {}
+      end
+
       def safe_params
         params.require(:instructor)
               .permit(:full_name, :email,

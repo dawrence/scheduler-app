@@ -86,6 +86,9 @@ GEM
     ffi (1.9.25)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
+    goldiloader (3.2.0)
+      activerecord (>= 4.2, < 6.3)
+      activesupport (>= 4.2, < 6.3)
     i18n (1.1.0)
       concurrent-ruby (~> 1.0)
     io-like (0.3.0)
@@ -249,6 +252,7 @@ DEPENDENCIES
   capybara (>= 2.15)
   chromedriver-helper
   factory_bot_rails
+  goldiloader
   jbuilder (~> 2.5)
   listen (>= 3.0.5, < 3.2)
   pg (~> 1)

@@ -21,10 +21,17 @@ module Api
       end
 
       def update
-        vehicle = Vehicle.find_by(id: params[:id])
+        vehicle = Vehicle.find_by!(id: params[:id])
         vehicle.update!(safe_params)
 
         render json: vehicle
+      end
+
+      def destroy
+        vehicle = Vehicle.find_by!(id: params[:id])
+        vehicle.destroy!
+
+        render json: {}
       end
 
       def safe_params
