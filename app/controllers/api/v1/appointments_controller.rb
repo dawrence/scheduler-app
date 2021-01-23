@@ -6,8 +6,8 @@ module Api
     class AppointmentsController < ApiController
       def index
         # this needs to be paginated. or limited by date range...
-        start_at = Time.parse(params[:start_at])
-        end_at = Time.parse(params[:end_at])
+        start_at = Time.iso8601(CGI.unescape(params[:start_at]))
+        end_at = Time.iso8601(CGI.unescape(params[:end_at]))
         filter_value = params[:filter_value]
         @appointments = if filter_type && filter_value
                           Appointment.where(start_at: start_at..end_at,
