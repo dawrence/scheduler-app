@@ -22,6 +22,22 @@ class InstructorForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchItems = this.fetchItems.bind(this);
     this.selectInstructor = this.selectInstructor.bind(this);
+    this.newRecord = this.newRecord.bind(this);
+  }
+
+  newRecord(ev) {
+    this.setState({
+      instructor: {
+        id: null,
+        full_name: '',
+        id_number: '',
+        email: '',
+        phone: '',
+        license_type: '',
+        available_hours: 10
+      }
+    });
+    this.forceUpdate();
   }
 
   handleSubmit(ev) {
@@ -146,6 +162,9 @@ class InstructorForm extends React.Component {
                         </div>
                         <div className='form-group'>
                           <button type="submit" className="waves-effect waves-light btn">Guardar</button>
+                        </div>
+                        <div className='form-group'>
+                          <button className="waves-effect waves-light btn" onClick={this.newRecord}>Nuevo</button>
                         </div>
                       </div>
                     </div>

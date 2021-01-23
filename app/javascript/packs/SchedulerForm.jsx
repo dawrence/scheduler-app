@@ -22,6 +22,7 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
         },
 
         (error) => {
+          alert(error)
           setVehicles([]);
         }
       )
@@ -35,6 +36,7 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
         },
 
         (error) => {
+          alert(error)
           setInstructors([]);
         }
       )
@@ -48,6 +50,7 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
         },
 
         (error) => {
+          alert(error)
           setStudents([]);
         }
       )

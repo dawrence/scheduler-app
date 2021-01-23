@@ -23,6 +23,23 @@ class StudentForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchItems = this.fetchItems.bind(this);
     this.selectStudent = this.selectStudent.bind(this);
+    this.newRecord = this.newRecord.bind(this);
+  }
+
+  newRecord(ev) {
+    this.setState({
+      student: {
+        id: null,
+        full_name: '',
+        id_number: '',
+        email: '',
+        phone: '',
+        age: 0,
+        license_type: '',
+        available_hours: 0
+      }
+    });
+    this.forceUpdate();
   }
 
   handleSubmit(ev) {
@@ -73,7 +90,7 @@ class StudentForm extends React.Component {
 
   handleChange(evt) {
     const name = evt.target.name
-    const licences = { a2: 16, b1: 21, c1: 31}
+    const licences = { a2: 16, b1: 21, c1: 31, a2b1: 37, a2c1: 47 }
     const studentParams = this.state.student
     studentParams[name] = evt.target.value
     if(name === 'license_type') {
@@ -156,6 +173,9 @@ class StudentForm extends React.Component {
                         </div>
                         <div className='form-group'>
                           <button type="submit" className="waves-effect waves-light btn">Guardar</button>
+                        </div>
+                        <div className='form-group'>
+                          <button className="waves-effect waves-light btn" onClick={this.newRecord}>Nuevo</button>
                         </div>
                       </div>
                     </div>

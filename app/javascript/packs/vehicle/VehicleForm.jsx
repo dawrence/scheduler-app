@@ -20,6 +20,7 @@ class VehicleForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchItems = this.fetchItems.bind(this);
     this.selectVehicle = this.selectVehicle.bind(this);
+    this.newRecord = this.newRecord.bind(this);
   }
 
   handleSubmit(ev) {
@@ -44,6 +45,18 @@ class VehicleForm extends React.Component {
     this.setState({ vehicle: vehicle })
   };
 
+  newRecord(ev) {
+    this.setState({
+      vehicle: {
+        id: null,
+        plate: '',
+        status: 'available',
+        type: 'Car',
+        available_hours: 16
+      },
+    });
+    this.forceUpdate();
+  }
 
   componentDidMount(){
     this.fetchItems();
@@ -132,6 +145,9 @@ class VehicleForm extends React.Component {
                         </div>
                         <div className='form-group'>
                           <button type="submit" className="waves-effect waves-light btn">Guardar</button>
+                        </div>
+                        <div className='form-group'>
+                          <button className="waves-effect waves-light btn" onClick={this.newRecord}>Nuevo</button>
                         </div>
                       </div>
                     </div>

@@ -6,8 +6,9 @@ module Available
   end
 
   def available_data
-    start_time = Time.iso8601(CGI.unescape(params[:start_at]))
-    end_time = Time.iso8601(CGI.unescape(params[:end_at]))
+    start_time = Time.iso8601(CGI.unescape(params[:start_at])).change(sec: 0)
+    end_time = Time.iso8601(CGI.unescape(params[:end_at])).change(sec: 0)
+
     model.without_appointments(start_time, end_time)
          .order(created_at: :desc)
   end

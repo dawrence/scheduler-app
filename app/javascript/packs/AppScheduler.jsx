@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Grid from '@material-ui/core/Grid';
+import axios from 'axios';
 import Room from '@material-ui/icons/Room';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -21,6 +22,7 @@ import {
   AppointmentForm,
   AppointmentTooltip,
   Toolbar,
+  DragDropProvider,
   DateNavigator,
   DayView,
   TodayButton
@@ -181,6 +183,11 @@ export default class AppScheduler extends React.PureComponent {
     this.onCurrentDateChange = this.onCurrentDateChange.bind(this);
   }
 
+  handleError(res) {
+    const data = res.response.data;
+    alert(data.error)
+  }
+
   toggleVisibility(){
     const { visible: tooltipVisibility } = this.state;
     this.setState({ visible: !tooltipVisibility });
@@ -194,22 +201,23 @@ export default class AppScheduler extends React.PureComponent {
     this.setState({ appointmentMeta: { data, target } });
   };
 
+  // think a way to handle responses an errors more beautiful.
   commitChanges({ added, changed, deleted }) {
     if(added) {
       this.saveAppointment(added).then((result) => {
         this.fetchAppointments();
-      })
+      }).catch(this.handleError)
     }
     if (changed) {
       this.updateAppointment(changed).then((result) => {
         this.fetchAppointments();
-      })
+      }).catch(this.handleError)
     }
 
     if(deleted !== undefined) {
       this.deleteAppoinment(deleted).then((response)=>{
         this.fetchAppointments();
-      })
+      }).catch(this.handleError)
     }
   }
 
@@ -219,16 +227,11 @@ export default class AppScheduler extends React.PureComponent {
       headers: { 'Content-Type': 'application/json' },
       body: ''
     };
-    return fetch(`/api/v1/appointments/${params}`, requestOptions).then(response => response.json())
+    return axios.delete(`/api/v1/appointments/${params}`, {})
   }
 
   saveAppointment(params) {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params)
-    };
-    return fetch('/api/v1/appointments', requestOptions).then(response => response.json())
+    return axios.post('/api/v1/appointments', params)
   }
 
   onCurrentDateChange(params){
@@ -238,12 +241,7 @@ export default class AppScheduler extends React.PureComponent {
 
   updateAppointment(params) {
     const appt_id = Object.keys(params)[0]
-    const requestOptions = {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params[appt_id])
-    };
-    return fetch(`/api/v1/appointments/${appt_id}`, requestOptions).then(response => response.json())
+    return axios.patch(`/api/v1/appointments/${appt_id}`, params[appt_id])
   }
 
   fetchAppointments(filterValue = null, filterType = null, currentDate=this.state.currentDate){
@@ -337,6 +335,7 @@ export default class AppScheduler extends React.PureComponent {
                 appointmentMeta={appointmentMeta}
                 onAppointmentMetaChange={this.onAppointmentMetaChange}
               />
+              <DragDropProvider/>
               <AppointmentForm
                 basicLayoutComponent={SchedulerForm}
                 textEditorComponent={TextEditor}

@@ -24,7 +24,7 @@ module Api
       # Just delegate the validation to the model.
       # bad one, and ugly
       def create
-        appointment = Appointment.create!(
+        appointment = Appointment.new(
           title: safe_params[:title],
           instructor_id: instructor&.id,
           vehicle_id: vehicle&.id,
@@ -33,7 +33,11 @@ module Api
           end_at: iso_end_at
         )
 
-        render json: appointment
+        if appointment.save
+          render json: appointment
+        else
+          render json: { error: appointment.errors.full_messages }, status: :unprocessable_entity
+        end
       end
 
       # so ugly, please just save safe_params.
@@ -42,7 +46,7 @@ module Api
         start_at = safe_params[:startDate] ? iso_start_at : appointment.start_at
         end_at = safe_params[:endDate] ? iso_end_at : appointment.end_at
 
-        appointment.update!(
+        appointment.update(
           title: safe_params[:title] || appointment.title,
           instructor_id: instructor&.id || appointment.instructor_id,
           vehicle_id: vehicle&.id || appointment.vehicle_id,
@@ -51,7 +55,11 @@ module Api
           end_at: end_at
         )
 
-        render json: appointment
+        if appointment.errors.present?
+          render json: { error: appointment.errors.full_messages }, status: :unprocessable_entity
+        else
+          render json: appointment
+        end
       end
 
       def destroy

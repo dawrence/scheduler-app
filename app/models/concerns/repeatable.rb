@@ -8,8 +8,9 @@ module Repeatable
     start_date = start_time.utc
     end_date = end_time.utc
     ids = joins(:appointments)
-          .where("appointments.start_at BETWEEN '#{start_date}' AND '#{end_date}' AND
-                  appointments.end_at BETWEEN '#{start_date}' AND '#{end_date}'")
+          .where("(:start_date > date_trunc('minute', appointments.start_at) AND :start_date < date_trunc('minute', appointments.end_at)) OR
+                  (:end_date > date_trunc('minute', appointments.start_at) AND :end_date < date_trunc('minute', appointments.end_at))",
+                  { start_date: start_date, end_date: end_date })
           .uniq
           .pluck(:id)
     where.not(id: ids)
