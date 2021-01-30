@@ -30,6 +30,8 @@ module Api
           vehicle_id: vehicle&.id,
           student_id: student&.id,
           start_at: iso_start_at,
+          license_type: safe_params[:license_type],
+          class_type: safe_params[:class_type],
           end_at: iso_end_at
         )
 
@@ -51,6 +53,8 @@ module Api
           instructor_id: instructor&.id || appointment.instructor_id,
           vehicle_id: vehicle&.id || appointment.vehicle_id,
           student_id: student&.id || appointment.student_id,
+          license_type: safe_params[:license_type] || appointment.license_type,
+          class_type: safe_params[:class_type] || appointment.class_type,
           start_at: start_at,
           end_at: end_at
         )
@@ -103,7 +107,8 @@ module Api
 
       def safe_params
         params.permit(:startDate, :endDate, :student_id,
-                      :vehicle_id, :instructor_id, :title)
+                      :vehicle_id, :instructor_id,
+                      :title, :license_type, :class_type)
       end
     end
   end

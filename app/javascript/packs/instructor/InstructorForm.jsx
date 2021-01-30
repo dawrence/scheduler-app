@@ -1,5 +1,6 @@
 import React from 'react'
 import InstructorList from './InstructorList'
+import axios from 'axios';
 
 class InstructorForm extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class InstructorForm extends React.Component {
         email: '',
         phone: '',
         license_type: '',
+        assigned_hours: 0,
         available_hours: 10
       },
       error: null,
@@ -23,6 +25,7 @@ class InstructorForm extends React.Component {
     this.fetchItems = this.fetchItems.bind(this);
     this.selectInstructor = this.selectInstructor.bind(this);
     this.newRecord = this.newRecord.bind(this);
+    this.deleteInstructor = this.deleteInstructor.bind(this);
   }
 
   newRecord(ev) {
@@ -38,6 +41,15 @@ class InstructorForm extends React.Component {
       }
     });
     this.forceUpdate();
+  }
+
+  deleteInstructor(e, id) {
+    if( confirm('Desea borrar el instructor seleccionado?')){
+      return axios.delete(`/api/v1/instructors/${id}`, {}).then(() => {
+        this.fetchItems();
+        this.forceUpdate();
+      })
+    }
   }
 
   handleSubmit(ev) {
@@ -175,7 +187,12 @@ class InstructorForm extends React.Component {
           </div>
         </div>
         <div className="col-12" style={{overflow: 'auto'}}>
-          <InstructorList items={this.state.instructors} error={this.state.error} itemsLoaded={this.state.loaded} selectItem={this.selectInstructor}/>
+          <InstructorList
+            items={this.state.instructors}
+            error={this.state.error}
+            itemsLoaded={this.state.loaded}
+            selectItem={this.selectInstructor}
+            deleteItem={this.deleteInstructor}/>
         </div>
       </>
     );

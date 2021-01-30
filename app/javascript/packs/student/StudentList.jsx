@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import DeleteIcon from '@material-ui/icons/Delete';
 
 function StudentList(props) {
   const items = props.items;
   const selectStudent = props.selectItem;
+  const deleteStudent = props.deleteItem
   const isLoaded = props.itemsLoaded;
   const [error, setError] = useState(props.error);
   const [stats, setStats] = useState(null);
@@ -31,6 +33,7 @@ function StudentList(props) {
             <th scope="col">Licencia</th>
             <th scope="col">Horas disponibles</th>
             <th scope="col">Horas Asignadas</th>
+            <th scope="col"> Actions </th>
           </tr>
         </thead>
         <tbody>
@@ -57,6 +60,9 @@ function StudentList(props) {
                   </td>
                   <td>
                     <span>{item.assigned_hours}</span>
+                  </td>
+                  <td>
+                    {item.assigned_hours === 0 && ( <DeleteIcon onClick={(ev) => deleteStudent(ev, item.id)}/> )}
                   </td>
                 </tr>
               );

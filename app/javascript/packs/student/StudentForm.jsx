@@ -1,5 +1,6 @@
 import React from 'react'
 import StudentList from './StudentList'
+import axios from 'axios';
 
 class StudentForm extends React.Component {
   constructor(props) {
@@ -24,6 +25,7 @@ class StudentForm extends React.Component {
     this.fetchItems = this.fetchItems.bind(this);
     this.selectStudent = this.selectStudent.bind(this);
     this.newRecord = this.newRecord.bind(this);
+    this.deleteStudent = this.deleteStudent.bind(this);
   }
 
   newRecord(ev) {
@@ -40,6 +42,15 @@ class StudentForm extends React.Component {
       }
     });
     this.forceUpdate();
+  }
+
+  deleteStudent(e, id) {
+    if( confirm('Desea borrar el Estudiante seleccionado?')){
+      return axios.delete(`/api/v1/students/${id}`, {}).then(() => {
+        this.fetchItems();
+        this.forceUpdate();
+      })
+    }
   }
 
   handleSubmit(ev) {
@@ -186,7 +197,12 @@ class StudentForm extends React.Component {
           </div>
         </div>
         <div className="col-12" style={{overflow: 'auto'}}>
-          <StudentList items={this.state.students} error={this.state.error} itemsLoaded={this.state.loaded} selectItem={this.selectStudent} />
+          <StudentList
+            items={this.state.students}
+            error={this.state.error}
+            itemsLoaded={this.state.loaded}
+            selectItem={this.selectStudent}
+            deleteItem={this.deleteStudent} />
         </div>
       </>
     );

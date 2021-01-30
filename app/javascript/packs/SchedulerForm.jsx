@@ -74,9 +74,19 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
     onFieldChange({ student_id: nextValue });
   };
 
+  const onLicenseChange = (nextValue) => {
+    onFieldChange({ license_type: nextValue });
+  }
+
+  const onClassTypeChange = (nextValue) => {
+    onFieldChange({ class_type: nextValue });
+  }
+
   const vehicleOptions = vehicles?.map((v) => {  return { id: v.id, text: `${v.plate} - ${v.string_type}` }}) || [];
   const instructorOptions = instructors?.map((v) => {  return { id: v.id, text: v.full_name}}) || [];
   const studentOptions = students?.map((v) => {  return { id: v.id, text: v.full_name}}) || [];
+  const licenseOptions = ['a2', 'b1', 'c1'].map((v) => {  return { id: v, text: v.toUpperCase()} });
+  const classTypeOptions = [{ id: 'practice', text: 'Práctica'}, { id:'test', text: 'Validación' }];
 
   return (
     <AppointmentForm.BasicLayout
@@ -118,6 +128,30 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
           availableOptions={studentOptions}
           onValueChange={onStudentIdChange}
           placeholder="Estudiante"
+        />
+      </div>
+      <div>
+        <AppointmentForm.Label
+          text="Licencia"
+          type="title"
+        />
+        <AppointmentForm.Select
+          value={appointmentData?.license_type || ''}
+          availableOptions={licenseOptions}
+          onValueChange={onLicenseChange}
+          placeholder="Tipo de Licencia"
+        />
+      </div>
+      <div>
+        <AppointmentForm.Label
+          text="Tipo de Clase"
+          type="title"
+        />
+        <AppointmentForm.Select
+          value={appointmentData?.class_type || ''}
+          availableOptions={classTypeOptions}
+          onValueChange={onClassTypeChange}
+          placeholder="Tipo de Clase"
         />
       </div>
     </AppointmentForm.BasicLayout>

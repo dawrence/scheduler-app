@@ -2,9 +2,11 @@
 
 # :nodoc
 class Student < ApplicationRecord
-  extend Repeatable
+  LICENSE_A2 = 'a2'.freeze
+  LICENSE_B1 = 'b1'.freeze
+  LICENSE_C1 = 'c1'.freeze
 
-  include Assignable
+  extend Repeatable
 
   has_many :appointments
 
@@ -23,5 +25,21 @@ class Student < ApplicationRecord
 
   def set_available_hours
     self.available_hours = AVAILABLE_HOURS[license_type.to_sym] || 0
+  end
+
+  def assigned_hours
+    appointments.sum do |a|
+      ((a.end_at - a.start_at) / 1.hour).round
+    end
+  end
+
+  def assigned_hours_per_license(license_type)
+    appointments.where(license_type: license_type).sum do |a|
+      ((a.end_at - a.start_at) / 1.hour).round
+    end
+  end
+
+  def available_hours_per_license(license_type)
+    AVAILABLE_HOURS[license_type.to_sym]
   end
 end

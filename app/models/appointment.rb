@@ -1,10 +1,22 @@
 class Appointment < ApplicationRecord
+  CLASS_PRACTICE_TYPE = 'practice'.freeze
+  CLASS_TEST_TYPE = 'test'.freeze
+  CLASS_TYPES = [CLASS_PRACTICE_TYPE, CLASS_TEST_TYPE].freeze
+
   belongs_to :instructor
   belongs_to :student
   belongs_to :vehicle
 
+  before_save :set_title
+
+  validates :license_type, inclusion: { in: [Student::LICENSE_A2, Student::LICENSE_B1, Student::LICENSE_C1] }
+  validates :class_type, inclusion: { in: CLASS_TYPES }
+
   validate :validate_appointment_uniqueness
-  validate :validate_assigned_hours
+  validate :validate_student_license_type
+  validate :validate_instructor_license_type
+  validate :instructor_assigned_hours
+  validate :student_assigned_hours
 
   def validate_appointment_uniqueness
     appointment_ids = Appointment.where(
@@ -32,18 +44,68 @@ class Appointment < ApplicationRecord
     errors.add(:end_at, 'Cita ya existe')
   end
 
-  def validate_assigned_hours
-    hours = ((end_at - start_at) / 1.hour).round
-    if instructor.assigned_hours + hours > instructor.available_hours
-      errors.add(:instructor_id, "#{instructor.full_name} sobrepasa las horas disponibles")
+  def hours
+    ((end_at - start_at) / 1.hour).round
+  end
+
+  def validate_student_license_type
+    return if student.license_type.include?(license_type)
+
+    errors.add(:student_id, "La Licencia del estudiante no es la de la clase")
+  end
+
+  def validate_instructor_license_type
+    return if instructor.license_type.include?(license_type)
+
+    errors.add(:instructor_id, "El instructor no es el adecuado para esta clase")
+  end
+
+  def instructor_assigned_hours
+    if instructor.assigned_hours_per_day(start_at) + hours > Instructor::MAX_HOURS_PER_DAY
+      errors.add(
+        :instructor_id,
+        "#{instructor.full_name} sobrepasa el maximo de horas diarias"
+      )
     end
 
-    if student.assigned_hours + hours > student.available_hours
-      errors.add(:student_id, "#{student.full_name} sobrepasa las horas disponibles")
+    if instructor.assigned_hours_per_month(start_at) + hours > Instructor::MAX_HOURS_PER_MONTH
+      errors.add(
+        :instructor_id,
+        "#{instructor.full_name} sobrepasa el maximo de horas mensuales"
+      )
     end
+  end
 
-    if vehicle.assigned_hours + hours > vehicle.available_hours
-      errors.add(:vehicle_id, "#{vehicle.plate} sobrepasa las horas disponibles")
+  def student_assigned_hours
+    student_hours = student.assigned_hours_per_license(license_type)
+
+    if student_hours + hours > student.available_hours_per_license(license_type)
+      errors.add(:student_id, "#{student.full_name} sobrepasa las horas disponibles en la licencia #{license_type}")
     end
+  end
+
+  def class_type_name
+    case class_type
+    when CLASS_PRACTICE_TYPE
+      'Práctica'
+    when CLASS_TEST_TYPE
+      'Validación'
+    end
+  end
+
+  def license_type_name
+    case license_type
+    when Student::LICENSE_A2
+      'Moto'
+    when Student::LICENSE_B1
+      'Carro'
+    when Student::LICENSE_C1
+      'Vehiculo Particular'
+    end
+  end
+
+  def set_title
+    self.title = "#{class_type_name} -
+     #{license_type_name} - #{student.full_name}"
   end
 end

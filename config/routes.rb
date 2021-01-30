@@ -10,11 +10,11 @@ Rails.application.routes.draw do
       namespace :vehicles do
         get 'available'
       end
-      resources :instructors, only: %i[index create update]
+      resources :instructors, only: %i[index create update destroy]
       namespace :instructors do
         get 'available'
       end
-      resources :students, only: %i[index create update]
+      resources :students, only: %i[index create update destroy]
       namespace :students do
         get 'available'
       end

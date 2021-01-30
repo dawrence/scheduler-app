@@ -159,7 +159,7 @@ export default class AppScheduler extends React.PureComponent {
     super(props);
 
     this.state = {
-      currentDate: moment(),
+      currentDate: new Date(),
       visible: false,
       filterType: null,
       filterValue: null,
@@ -235,8 +235,10 @@ export default class AppScheduler extends React.PureComponent {
   }
 
   onCurrentDateChange(params){
-    this.setState({ currentDate: params });
-    this.fetchAppointments(null, null, params);
+    if (params.getMonth() !== this.state.currentDate.getMonth()) {
+      this.setState({ currentDate: params });
+      this.fetchAppointments(null, null, params);
+    }
   }
 
   updateAppointment(params) {
@@ -252,16 +254,13 @@ export default class AppScheduler extends React.PureComponent {
     if(filterType && filterValue) {
       url = url+`&filter_type=${filterType}&filter_value=${filterValue}`
     }
-    fetch(url)
-      .then(res => res.json())
-      .then(
-        (result) => {
+    return axios.get(url)
+      .then((result) => {
           this.setState({
-            data: result
+            data: result.data
           })
-        },
-
-        (error) => {
+        })
+      .catch((error) => {
           this.setState({
             error: error
           })
