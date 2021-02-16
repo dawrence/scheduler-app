@@ -138,7 +138,7 @@ class InstructorForm extends React.Component {
                                 onChange={this.handleChange}
                                 className='validate form-control'
                                 placeholder="Cedula" />
-                          <label htmlFor="email">Email</label>
+                          {/* <label htmlFor="email">Email</label>
                           <input type='text'
                                 name='email'
                                 value={ this.state.instructor.email || '' }
@@ -152,7 +152,7 @@ class InstructorForm extends React.Component {
                                 value={ this.state.instructor.phone || '' }
                                 onChange={this.handleChange}
                                 className='validate form-control'
-                                placeholder="Telefono"/>
+                                placeholder="Telefono"/> */}
 
                           <label htmlFor="licenseType">Tipo de licencia</label>
                           <select name="license_type" className="form-control" id="licenseType" onChange={this.handleChange}>

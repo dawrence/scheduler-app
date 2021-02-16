@@ -1,5 +1,7 @@
 import * as React from 'react';
 import  { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import moment from 'moment';
 
 import {
@@ -111,11 +113,14 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
           text="Instructor"
           type="title"
         />
-        <AppointmentForm.Select
+        <Autocomplete
+          id="combo-box-demo"
+          options={instructorOptions}
           value={appointmentData?.instructor_id || ''}
-          availableOptions={instructorOptions}
-          onValueChange={onInstructorIdChange}
-          placeholder="Instructor"
+          getOptionLabel={(option) => option.text}
+          style={{ width: 300 }}
+          onChange={(ev, next)=>{ onInstructorIdChange(next.id) } }
+          renderInput={(params) => <TextField {...params} label="Instructor" variant="outlined" />}
         />
       </div>
       <div>
@@ -123,11 +128,14 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
           text="Estudiante"
           type="title"
         />
-        <AppointmentForm.Select
+        <Autocomplete
+          id="combo-box-demo"
+          options={studentOptions}
           value={appointmentData?.student_id || ''}
-          availableOptions={studentOptions}
-          onValueChange={onStudentIdChange}
-          placeholder="Estudiante"
+          getOptionLabel={(option) => option.text}
+          style={{ width: 300 }}
+          onChange={(ev, next)=>{ onStudentIdChange(next.id) } }
+          renderInput={(params) => <TextField {...params} label="Estudiante" variant="outlined" />}
         />
       </div>
       <div>
