@@ -98,25 +98,12 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
     >
       <div>
         <AppointmentForm.Label
-          text="Vehiculo"
-          type="title"
-        />
-        <AppointmentForm.Select
-          value={appointmentData?.vehicle_id || ''}
-          availableOptions={vehicleOptions}
-          onValueChange={onVehicleIdChange}
-          placeholder="Vehiculo"
-        />
-      </div>
-      <div>
-        <AppointmentForm.Label
           text="Instructor"
           type="title"
         />
         <Autocomplete
           id="combo-box-demo"
           options={instructorOptions}
-          value={appointmentData?.instructor_id || ''}
           getOptionLabel={(option) => option.text}
           style={{ width: 300 }}
           onChange={(ev, next)=>{ onInstructorIdChange(next.id) } }
@@ -131,7 +118,6 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
         <Autocomplete
           id="combo-box-demo"
           options={studentOptions}
-          value={appointmentData?.student_id || ''}
           getOptionLabel={(option) => option.text}
           style={{ width: 300 }}
           onChange={(ev, next)=>{ onStudentIdChange(next.id) } }

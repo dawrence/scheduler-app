@@ -12,7 +12,7 @@ import Room from '@material-ui/icons/Room';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import classNames from 'clsx';
-import { blue, orange } from '@material-ui/core/colors';
+import { blue } from '@material-ui/core/colors';
 import Filter from './Filter'
 import { ViewState, EditingState, IntegratedGrouping, GroupingState, IntegratedEditing} from '@devexpress/dx-react-scheduler';
 import {
@@ -176,6 +176,7 @@ export default class AppScheduler extends React.PureComponent {
     };
     this.fetchVehicles();
     this.fetchAppointments();
+    this.fetchAppointments = this.fetchAppointments.bind(this);
     this.commitChanges = this.commitChanges.bind(this);
     this.saveAppointment = this.saveAppointment.bind(this);
     this.toggleVisibility = this.toggleVisibility.bind(this);
@@ -183,6 +184,7 @@ export default class AppScheduler extends React.PureComponent {
     this.onAppointmentMetaChange = this.onAppointmentMetaChange.bind(this);
     this.myAppointment = this.myAppointment.bind(this);
     this.handleFilter = this.handleFilter.bind(this);
+    this.handleFilterWithId = this.handleFilterWithId.bind(this);
     this.onCurrentDateChange = this.onCurrentDateChange.bind(this);
   }
 
@@ -292,6 +294,10 @@ export default class AppScheduler extends React.PureComponent {
     this.fetchAppointments(value, type);
   }
 
+  handleFilterWithId(id, type) {
+    this.fetchAppointments(id, type);
+  }
+
   myAppointment(props) {
     return (
       <Appointment
@@ -307,14 +313,14 @@ export default class AppScheduler extends React.PureComponent {
     const resources = [{
       fieldName: 'vehicle_id',
       title: 'Vehicle',
-      instances: vehicles?.map((r) => { return {text: `${r.string_type} - ${r.plate}`, id: r.id, color: orange }; }) || []
+      instances: vehicles?.map((r, i) => { return {text: `${r.string_type} - ${r.plate}`, id: r.id, color: blue[i*100] }; }) || []
     }];
     const grouping = vehicles.length > 0 ? [{
       resourceName: 'vehicle_id',
     }] : [];
     return (
       <>
-        <Filter filter={this.handleFilter}/>
+        <Filter filter={this.handleFilter} filterWithId={this.handleFilterWithId}/>
         <React.Fragment>
           <ExternalViewSwitcher
             currentViewName={currentViewName}
