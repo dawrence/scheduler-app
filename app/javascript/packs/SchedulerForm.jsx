@@ -1,5 +1,7 @@
 import * as React from 'react';
 import  { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import moment from 'moment';
 
 import {
@@ -96,26 +98,16 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
     >
       <div>
         <AppointmentForm.Label
-          text="Vehiculo"
-          type="title"
-        />
-        <AppointmentForm.Select
-          value={appointmentData?.vehicle_id || ''}
-          availableOptions={vehicleOptions}
-          onValueChange={onVehicleIdChange}
-          placeholder="Vehiculo"
-        />
-      </div>
-      <div>
-        <AppointmentForm.Label
           text="Instructor"
           type="title"
         />
-        <AppointmentForm.Select
-          value={appointmentData?.instructor_id || ''}
-          availableOptions={instructorOptions}
-          onValueChange={onInstructorIdChange}
-          placeholder="Instructor"
+        <Autocomplete
+          id="combo-box-demo"
+          options={instructorOptions}
+          getOptionLabel={(option) => option.text}
+          style={{ width: 300 }}
+          onChange={(ev, next)=>{ onInstructorIdChange(next.id) } }
+          renderInput={(params) => <TextField {...params} label="Instructor" variant="outlined" />}
         />
       </div>
       <div>
@@ -123,11 +115,13 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
           text="Estudiante"
           type="title"
         />
-        <AppointmentForm.Select
-          value={appointmentData?.student_id || ''}
-          availableOptions={studentOptions}
-          onValueChange={onStudentIdChange}
-          placeholder="Estudiante"
+        <Autocomplete
+          id="combo-box-demo"
+          options={studentOptions}
+          getOptionLabel={(option) => option.text}
+          style={{ width: 300 }}
+          onChange={(ev, next)=>{ onStudentIdChange(next.id) } }
+          renderInput={(params) => <TextField {...params} label="Estudiante" variant="outlined" />}
         />
       </div>
       <div>

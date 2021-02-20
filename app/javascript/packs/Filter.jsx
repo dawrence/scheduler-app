@@ -1,4 +1,6 @@
 import React from 'react'
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 class Filter extends React.Component {
   constructor(props){
@@ -11,12 +13,22 @@ class Filter extends React.Component {
     this.fetchVehicles = this.fetchVehicles.bind(this)
     this.fetchInstructors = this.fetchInstructors.bind(this)
     this.fetchStudents = this.fetchStudents.bind(this)
+    this.onStudentIdChange = this.onStudentIdChange.bind(this)
+    this.onInstructorChange = this.onInstructorChange.bind(this)
   }
 
   componentDidMount(){
     this.fetchVehicles();
     this.fetchInstructors();
     this.fetchStudents();
+  }
+
+  onStudentIdChange(id){
+    this.props.filterWithId(id, 'student')
+  }
+
+  onInstructorChange(id){
+    this.props.filterWithId(id, 'instructor')
   }
 
   fetchVehicles(){
@@ -88,33 +100,27 @@ class Filter extends React.Component {
           <div className='col m4'>
             <div className='form-group'>
               <label htmlFor="student">Filtrar por Estudiante</label>
-              <select name="student" className="form-control"
-                      id="vehicle"
-                      defaultValue='-1'
-                      onChange={(ev) => { this.props.filter(ev, 'student') }}>
-                <option disable='true' value='-1'> -- Estudiante --</option>
-                { studentOptions.length > 0 && studentOptions.map(item => {
-                  return (
-                    <option key={`stdt-${item.id}`} value={item.id}>{item.text}</option>
-                  );
-                })}
-              </select>
+              <Autocomplete
+                id="combo-box-instructor"
+                options={studentOptions}
+                getOptionLabel={(option) => option.text}
+                style={{ width: 300 }}
+                onChange={ (ev, next)=>{ this.onStudentIdChange(next.id)} }
+                renderInput={(params) => <TextField {...params} label="Estudiante" variant="outlined" />}
+              />
             </div>
           </div>
           <div className='col m4'>
             <div className='form-group'>
               <label htmlFor="instructor">Filtrar por Instructor</label>
-              <select key={'instru'} name="instructor"
-                      className="form-control" id="vehicle"
-                      defaultValue='-1'
-                      onChange={(ev) => { this.props.filter(ev, 'instructor') }}>
-                <option disable='true' value='-1'> -- Instructor --</option>
-                { instructorOptions.length > 0 && instructorOptions.map(item => {
-                  return (
-                    <option key={`inst-${item.id}`} value={item.id}>{item.text}</option>
-                  );
-                })}
-              </select>
+              <Autocomplete
+                id="combo-box-instructor"
+                options={instructorOptions}
+                getOptionLabel={(option) => option.text}
+                style={{ width: 300 }}
+                onChange={ (ev, next)=>{ this.onInstructorChange(next.id)} }
+                renderInput={(params) => <TextField {...params} label="Instructor" variant="outlined" />}
+              />
             </div>
           </div>
         </div>

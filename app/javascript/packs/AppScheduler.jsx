@@ -12,8 +12,9 @@ import Room from '@material-ui/icons/Room';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import classNames from 'clsx';
+import { blue } from '@material-ui/core/colors';
 import Filter from './Filter'
-import { ViewState, EditingState, IntegratedEditing} from '@devexpress/dx-react-scheduler';
+import { ViewState, EditingState, IntegratedGrouping, GroupingState, IntegratedEditing} from '@devexpress/dx-react-scheduler';
 import {
   Scheduler,
   WeekView,
@@ -22,6 +23,8 @@ import {
   AppointmentForm,
   AppointmentTooltip,
   Toolbar,
+  Resources,
+  GroupingPanel,
   DragDropProvider,
   DateNavigator,
   DayView,
@@ -164,15 +167,16 @@ export default class AppScheduler extends React.PureComponent {
       filterType: null,
       filterValue: null,
       data: [],
+      vehicles: [],
       currentViewName: 'Month',
       appointmentMeta: {
         target: null,
         data: {},
       },
     };
-
+    this.fetchVehicles();
     this.fetchAppointments();
-
+    this.fetchAppointments = this.fetchAppointments.bind(this);
     this.commitChanges = this.commitChanges.bind(this);
     this.saveAppointment = this.saveAppointment.bind(this);
     this.toggleVisibility = this.toggleVisibility.bind(this);
@@ -180,6 +184,7 @@ export default class AppScheduler extends React.PureComponent {
     this.onAppointmentMetaChange = this.onAppointmentMetaChange.bind(this);
     this.myAppointment = this.myAppointment.bind(this);
     this.handleFilter = this.handleFilter.bind(this);
+    this.handleFilterWithId = this.handleFilterWithId.bind(this);
     this.onCurrentDateChange = this.onCurrentDateChange.bind(this);
   }
 
@@ -238,6 +243,7 @@ export default class AppScheduler extends React.PureComponent {
     if (params.getMonth() !== this.state.currentDate.getMonth()) {
       this.setState({ currentDate: params });
       this.fetchAppointments(null, null, params);
+      this.fetchVehicles();
     }
   }
 
@@ -268,10 +274,28 @@ export default class AppScheduler extends React.PureComponent {
       )
   }
 
+  fetchVehicles(){
+    const startOfMonth = encodeURIComponent(moment(this.state.currentDate).startOf('month').toISOString());
+    const endOfMonth   = encodeURIComponent(moment(this.state.currentDate).endOf('month').toISOString());
+    axios.get(`/api/v1/vehicles/available?start_at=${startOfMonth}&end_at=${endOfMonth}`)
+    .then((result) => {
+      this.setState({ vehicles: result.data });
+    })
+    .catch((error) => {
+        alert(error)
+        this.setState({ vehicles: [], error: error });
+      }
+    )
+  }
+
   // check why isn't working with the state.
   handleFilter(ev, type) {
     const value = ev.target.value;
     this.fetchAppointments(value, type);
+  }
+
+  handleFilterWithId(id, type) {
+    this.fetchAppointments(id, type);
   }
 
   myAppointment(props) {
@@ -285,11 +309,18 @@ export default class AppScheduler extends React.PureComponent {
   }
 
   render() {
-    const { data, currentViewName, visible, appointmentMeta } = this.state;
-
+    const { data, currentViewName, visible, appointmentMeta, vehicles } = this.state;
+    const resources = [{
+      fieldName: 'vehicle_id',
+      title: 'Vehicle',
+      instances: vehicles?.map((r, i) => { return {text: `${r.string_type} - ${r.plate}`, id: r.id, color: blue[i*100] }; }) || []
+    }];
+    const grouping = vehicles.length > 0 ? [{
+      resourceName: 'vehicle_id',
+    }] : [];
     return (
       <>
-        <Filter filter={this.handleFilter}/>
+        <Filter filter={this.handleFilter} filterWithId={this.handleFilterWithId}/>
         <React.Fragment>
           <ExternalViewSwitcher
             currentViewName={currentViewName}
@@ -334,6 +365,10 @@ export default class AppScheduler extends React.PureComponent {
                 appointmentMeta={appointmentMeta}
                 onAppointmentMetaChange={this.onAppointmentMetaChange}
               />
+              { vehicles.length > 0 && (<Resources data={resources} mainResourceName="vehicle_id"/>) }
+              { grouping.length > 0 && ( <GroupingState grouping={grouping}/>) }
+              { grouping.length > 0 && ( <IntegratedGrouping />) }
+              { grouping.length > 0 && (<GroupingPanel />) }
               <DragDropProvider/>
               <AppointmentForm
                 basicLayoutComponent={SchedulerForm}
