@@ -18,8 +18,7 @@
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag '//cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag '//cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js', 'data-turbolinks-track': 'reload' %>
-
-    <%= javascript_pack_tag 'main'%>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
@@ -30,9 +29,28 @@
           <%= image_tag 'logo.png' %>
           Calendario Rodando
         </a>
+        <% if user_signed_in? %>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li>
+              <%= link_to(destroy_user_session_path, method: :delete, class: "grey-text text-darken-4") do %>          
+                <i class="material-icons">logout</i>
+              <% end %>
+            </li>
+          </ul>
+        <% end %>
       </div>
     </nav>
     <main role="main" class="container">
+      <% if notice.present? %>
+        <div class="card-panel blue lighten-2 notice">
+          <span class="white-text"><%= notice %></span>
+        </div>
+      <% end %>
+      <% if alert.present? %>
+        <div class="card-panel red darken-2 alert">
+          <span class="white-text"><%= alert %></span>
+        </div>
+      <% end %>
       <%= yield %>
     </main>
   </body>

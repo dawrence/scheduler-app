@@ -1,7 +1,17 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  devise_for :users
+
+  
+  unauthenticated :user do
+    devise_scope :user do
+      get "/" => "devise/sessions#new"
+    end
+  end
+
   root to: 'appointments#index'
+
 
   namespace :api do
     namespace :v1 do

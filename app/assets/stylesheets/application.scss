@@ -17,3 +17,13 @@ nav {
     z-index:99;
   }
 }
+.alert, .notice{
+  span{
+    font-size: 1.45rem;
+  }
+}
+.actions{
+  .btn:hover{
+    color: #fff;
+  }
+}
