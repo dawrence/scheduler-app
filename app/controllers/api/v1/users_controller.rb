@@ -1,11 +1,15 @@
-class Api::V1::UsersController < ApplicationController
+module Api
+  module V1
+    class UsersController < ApiController
 
-  def active_user
-    if user_signed_in?
-      render json: current_user
-    else
-      render json: '{"error": "Unauthorized"}', status: :unauthorized
+      def active_user
+        if can_perform
+          render json: current_user
+        else
+          raise ApiErrors::Unauthorized
+        end
+      end
+
     end
   end
-
 end

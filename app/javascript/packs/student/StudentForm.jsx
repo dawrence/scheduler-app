@@ -1,6 +1,14 @@
 import React from 'react'
 import StudentList from './StudentList'
+import ErrorDialog from '../dialogs/ErrorDialog';
 import axios from 'axios';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+
 
 class StudentForm extends React.Component {
   constructor(props) {
@@ -21,7 +29,8 @@ class StudentForm extends React.Component {
       },
       error: null,
       students: [],
-      loaded: false
+      loaded: false,
+      openDialog: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -34,6 +43,11 @@ class StudentForm extends React.Component {
     this.unmarkStudent = this.unmarkStudent.bind(this);
     this.setFineStudent = this.setFineStudent.bind(this);
     this.payFineStudent = this.payFineStudent.bind(this);
+    this.closeDialog = this.closeDialog.bind(this);
+  }
+  
+  closeDialog() {
+    this.setState({openDialog: false})
   }
 
   newRecord(ev) {
@@ -53,22 +67,19 @@ class StudentForm extends React.Component {
   }
 
   fetchCurrentUser() {
-    fetch("/api/v1/active_user")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            currentUser: result,
-          })
-        },
-
-        (error) => {
-          this.setState({
-            error: error,
-            loaded: false
-          })
-        }
-      )
+    axios.get("/api/v1/active_user", {})
+      .then(({data}) => {
+        this.setState({
+          currentUser: data,
+        })
+      })
+      .catch((error) => {
+        this.setState({
+          error: error.message,
+          loaded: false,
+          openDialog: true
+        })
+      })
   }
 
   markStudent(e, id) {
@@ -144,23 +155,20 @@ class StudentForm extends React.Component {
   }
 
   fetchItems(){
-    fetch("/api/v1/students")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            students: result,
-            loaded: true
-          })
-        },
-
-        (error) => {
-          this.setState({
-            error: error,
-            loaded: false
-          })
-        }
-      )
+    axios.get("/api/v1/students", {})
+      .then(({data}) => {
+        this.setState({
+          students: data,
+          loaded: true
+        })
+      })
+      .catch((error) => {
+        this.setState({
+          error: error.message,
+          loaded: false,
+          openDialog: true
+        })
+      });
   }
 
   handleChange(evt) {
@@ -273,6 +281,7 @@ class StudentForm extends React.Component {
             setFine={this.setFineStudent} 
           />
         </div>
+        <ErrorDialog message={this.state.error} open={this.state.openDialog} handleClose={this.closeDialog}/>
       </>
     );
   }

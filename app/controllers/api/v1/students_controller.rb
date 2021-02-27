@@ -7,8 +7,12 @@ module Api
       include Available
 
       def index
-        @students = Student.all.order(created_at: :desc)
-        render json: @students
+        if can_perform
+          @students = Student.all.order(created_at: :desc)
+          render json: @students
+        else
+          raise ApiErrors::Unauthorized
+        end
       end
 
       def create
