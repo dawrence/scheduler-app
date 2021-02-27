@@ -1,0 +1,41 @@
+<div class='container' style='padding-top: 2rem'>
+  <h3>Horario</h3>
+  <div class='row'>
+    <div class="col-3"><strong>Nombre:</strong></div>
+    <div class="col-9"><span><%= @student.full_name %></span></div>
+  </div>
+  <div class='row'>
+    <div class="col-3"><strong>Fecha:</strong></div>
+    <div class="col-9"><span><%=I18n.l(Date.today, format: '%A, %b %e')%></span></div>
+  </div>
+  <div class='row'>
+    <div class="col-3"><strong>Categoria:</strong></div>
+    <div class="col-9"><span><%= @student.license_type %></span></div>
+  </div>
+  <div class='row'>
+    <h4>Practicas</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Dia</th>
+          <th scope="col">Hora</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @appointments.each_with_index do |app, i| %>
+          <tr>
+            <th scope="row"><%=I18n.l(app.start_at, format: '%A, %b %e')%></th>
+            <td><%= app.display_hour %></td>
+          </tr>
+        <%end%>
+      </tbody>
+    </table>
+  </div>
+  <div class='row'>
+    <p>* La no asistencia a las clases teóricas y/o prácticas sin previo aviso incurrirá en una sanción de $15.000 Pesos Colombianos.</p>
+    <p>* Horarios sujetos a cambios inesperados dado a decretos departamentales.</p>
+  </div>
+  <div class='row'>
+    <h4>FIRMA:___________________________</h4>
+  </div>
+</div>

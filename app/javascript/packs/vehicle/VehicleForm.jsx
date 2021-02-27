@@ -157,7 +157,7 @@ class VehicleForm extends React.Component {
             </form>
           </div>
         </div>
-        <div className="col-12" style={{overflow: 'auto'}}>
+        <div className="col-12" style={{overflow: 'auto', height: '300px'}}>
           <VehicleList items={this.state.vehicles} error={this.state.error} itemsLoaded={this.state.loaded} selectItem={this.selectVehicle}/>
         </div>
       </>

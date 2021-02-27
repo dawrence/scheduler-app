@@ -69,7 +69,7 @@ ActiveRecord::Schema.define(version: 2021_02_20_060138) do
     t.string "plate", null: false
     t.string "status"
     t.integer "available_hours", default: 0
-    t.string "type", null: false
+    t.string "type", default: "car", null: false
     t.json "additional_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
