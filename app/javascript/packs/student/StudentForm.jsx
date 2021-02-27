@@ -12,6 +12,9 @@ class StudentForm extends React.Component {
         id_number: '',
         email: '',
         phone: '',
+        debtor: false,
+        total_fines: 0,
+        total_fines_value: 0.0,
         age: 0,
         license_type: '',
         available_hours: 0
@@ -23,9 +26,14 @@ class StudentForm extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchItems = this.fetchItems.bind(this);
+    this.fetchCurrentUser = this.fetchCurrentUser.bind(this);
     this.selectStudent = this.selectStudent.bind(this);
     this.newRecord = this.newRecord.bind(this);
     this.deleteStudent = this.deleteStudent.bind(this);
+    this.markStudent = this.markStudent.bind(this);
+    this.unmarkStudent = this.unmarkStudent.bind(this);
+    this.setFineStudent = this.setFineStudent.bind(this);
+    this.payFineStudent = this.payFineStudent.bind(this);
   }
 
   newRecord(ev) {
@@ -42,6 +50,61 @@ class StudentForm extends React.Component {
       }
     });
     this.forceUpdate();
+  }
+
+  fetchCurrentUser() {
+    fetch("/api/v1/active_user")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            currentUser: result,
+          })
+        },
+
+        (error) => {
+          this.setState({
+            error: error,
+            loaded: false
+          })
+        }
+      )
+  }
+
+  markStudent(e, id) {
+    if( confirm('¿Desea marcar cómo moroso al Estudiante seleccionado?')){
+      return axios.get(`/api/v1/students/${id}/debtor/mark`, {}).then(() => {
+        this.fetchItems();
+        this.forceUpdate();
+      })
+    }
+  }
+
+  unmarkStudent(e, id) {
+    if (confirm('¿Desea desmarcar cómo moroso al Estudiante seleccionado?')){
+      return axios.get(`/api/v1/students/${id}/debtor/unmark`, {}).then(() => {
+        this.fetchItems();
+        this.forceUpdate();
+      })
+    }
+  }
+
+  setFineStudent(e, id) {
+    if( confirm('¿Desea adicionar una multa al Estudiante seleccionado?')){
+      return axios.get(`/api/v1/students/${id}/fine/set`, {}).then(() => {
+        this.fetchItems();
+        this.forceUpdate();
+      })
+    }
+  }
+
+  payFineStudent(e, id) {
+    if( confirm('¿Desea pagar una multa del Estudiante seleccionado?')){
+      return axios.get(`/api/v1/students/${id}/fine/pay`, {}).then(() => {
+        this.fetchItems();
+        this.forceUpdate();
+      })
+    }
   }
 
   deleteStudent(e, id) {
@@ -77,6 +140,7 @@ class StudentForm extends React.Component {
 
   componentDidMount(){
     this.fetchItems();
+    this.fetchCurrentUser();
   }
 
   fetchItems(){
@@ -202,7 +266,12 @@ class StudentForm extends React.Component {
             error={this.state.error}
             itemsLoaded={this.state.loaded}
             selectItem={this.selectStudent}
-            deleteItem={this.deleteStudent} />
+            deleteItem={this.deleteStudent} 
+            markAsDebtor={this.markStudent} 
+            unmarkAsDebtor={this.unmarkStudent} 
+            payFine={this.payFineStudent} 
+            setFine={this.setFineStudent} 
+          />
         </div>
       </>
     );

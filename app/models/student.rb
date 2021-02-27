@@ -5,10 +5,12 @@ class Student < ApplicationRecord
   LICENSE_A2 = 'a2'.freeze
   LICENSE_B1 = 'b1'.freeze
   LICENSE_C1 = 'c1'.freeze
+  FINE_VALUE = 15000.0.freeze
 
   extend Repeatable
 
   has_many :appointments
+  has_many :fines
 
   validates :license_type, inclusion: { in: %w[a2 b1 c1 a2b1 a2c1] }
   validates_uniqueness_of :id_number
@@ -42,4 +44,30 @@ class Student < ApplicationRecord
   def available_hours_per_license(license_type)
     AVAILABLE_HOURS[license_type.to_sym]
   end
+
+  def total_fines
+    self.fines.count
+  end
+
+  def total_fines_value
+    self.fines.sum(&:value)
+  end
+
+  def set_fine
+    self.fines.create!(value: FINE_VALUE)
+  end
+
+  def pay_fine
+    self.fines.order(created_at: :asc).first.destroy!
+  end
+
+  def mark_as_debtor
+    self.update!(debtor: true)
+  end
+
+  def unmark_as_debtor
+    self.update!(debtor: false)
+  end
+
+
 end

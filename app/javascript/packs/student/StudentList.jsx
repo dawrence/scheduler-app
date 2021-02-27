@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import DeleteIcon from '@material-ui/icons/Delete';
+import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import NewReleasesIcon from '@material-ui/icons/NewReleases';
+import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
+import { Typography } from '@material-ui/core';
+import numeral from 'numeral';
+
 
 function StudentList(props) {
   const items = props.items;
   const selectStudent = props.selectItem;
   const deleteStudent = props.deleteItem
   const isLoaded = props.itemsLoaded;
+  const { markAsDebtor, unmarkAsDebtor, payFine, setFine } = props;
   const [error, setError] = useState(props.error);
   const [stats, setStats] = useState(null);
   const [statsToggle, setStatsToggle] = useState(null);
@@ -29,6 +37,9 @@ function StudentList(props) {
             <th scope="col">Nombre Completo</th>
             <th scope="col">Cedula</th>
             <th scope="col">Email</th>
+            <th scope="col">Deudor moroso</th>
+            <th scope="col">Multas</th>
+            <th scope="col">Multas Valor</th>
             <th scope="col">Telefono</th>
             <th scope="col">Licencia</th>
             <th scope="col">Horas disponibles</th>
@@ -50,6 +61,17 @@ function StudentList(props) {
                     <span>{item.email}</span>
                   </td>
                   <td>
+                    <Typography color={item.debtor ? "error" : "initial"}>
+                      {item.debtor ? "Moroso" : "No moroso"}
+                    </Typography>
+                  </td>
+                  <td>
+                    <span>{item.total_fines}</span>
+                  </td>
+                  <td>
+                    <span>{numeral(item.total_fines_value).format('$ 0,0')}</span>
+                  </td>
+                  <td>
                     <span>{item.phone}</span>
                   </td>
                   <td>
@@ -63,6 +85,13 @@ function StudentList(props) {
                   </td>
                   <td>
                     {item.assigned_hours === 0 && ( <DeleteIcon onClick={(ev) => deleteStudent(ev, item.id)}/> )}
+                    {
+                      item.debtor
+                        ? <AssignmentLateIcon color={"error"} onClick={(ev) => unmarkAsDebtor(ev, item.id)}/>
+                        : <AssignmentTurnedInIcon onClick={(ev) => markAsDebtor(ev, item.id)}/>
+                    }
+                    <NewReleasesIcon onClick={(ev) => setFine(ev, item.id)}/>
+                    {item.total_fines > 0 && <AttachMoneyIcon onClick={(ev) => payFine(ev, item.id)}/>}
                   </td>
                 </tr>
               );

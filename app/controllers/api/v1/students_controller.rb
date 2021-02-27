@@ -28,6 +28,30 @@ module Api
         render json: {}
       end
 
+      def mark_as_debtor
+        student = Student.find_by!(id: params[:id])
+        student.mark_as_debtor
+        render json: student
+      end
+
+      def unmark_as_debtor
+        student = Student.find_by!(id: params[:id])
+        student.unmark_as_debtor
+        render json: student
+      end
+
+      def set_fine
+        student = Student.find_by!(id: params[:id])
+        student.set_fine
+        render json: student
+      end
+
+      def pay_fine
+        student = Student.find_by!(id: params[:id])
+        student.pay_fine
+        render json: student
+      end
+
       def safe_params
         params.require(:student)
               .permit(:full_name, :email, :phone,
