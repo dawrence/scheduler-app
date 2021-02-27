@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      get :active_user, to: 'users#active_user'
       resources :appointments, only: %i[index create destroy update]
       resources :vehicles, only: %i[index create update]
       namespace :vehicles do
@@ -24,7 +25,12 @@ Rails.application.routes.draw do
       namespace :instructors do
         get 'available'
       end
-      resources :students, only: %i[index create update destroy]
+      resources :students, only: %i[index create update destroy] do
+        get :mark_as_debtor, on: :member, path: 'debtor/mark'
+        get :unmark_as_debtor, on: :member, path: 'debtor/unmark'
+        get :set_fine, on: :member, path: 'fine/set'
+        get :pay_fine, on: :member, path: 'fine/pay'
+      end
       namespace :students do
         get 'available'
       end

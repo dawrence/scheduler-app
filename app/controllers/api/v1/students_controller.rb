@@ -7,8 +7,12 @@ module Api
       include Available
 
       def index
-        @students = Student.all.order(created_at: :desc)
-        render json: @students
+        if can_perform
+          @students = Student.all.order(created_at: :desc)
+          render json: @students
+        else
+          raise ApiErrors::Unauthorized
+        end
       end
 
       def create
@@ -26,6 +30,30 @@ module Api
         student = Student.find_by!(id: params[:id])
         student.destroy!
         render json: {}
+      end
+
+      def mark_as_debtor
+        student = Student.find_by!(id: params[:id])
+        student.mark_as_debtor
+        render json: student
+      end
+
+      def unmark_as_debtor
+        student = Student.find_by!(id: params[:id])
+        student.unmark_as_debtor
+        render json: student
+      end
+
+      def set_fine
+        student = Student.find_by!(id: params[:id])
+        student.set_fine
+        render json: student
+      end
+
+      def pay_fine
+        student = Student.find_by!(id: params[:id])
+        student.pay_fine
+        render json: student
       end
 
       def safe_params

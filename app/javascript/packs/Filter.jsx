@@ -1,6 +1,8 @@
 import React from 'react'
 import TextField from '@material-ui/core/TextField';
+import axios from 'axios';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import ErrorDialog from './dialogs/ErrorDialog'
 
 class Filter extends React.Component {
   constructor(props){
@@ -46,31 +48,26 @@ class Filter extends React.Component {
   }
 
   fetchInstructors() {
-    fetch('/api/v1/instructors')
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({ instructors: result });
-        },
-
-        (error) => {
-          this.setState({ instructors: [] });
-        }
-      )
+    axios.get('/api/v1/instructors', {})
+      .then(({data}) => {
+        this.setState({ instructors: data });
+      })
+      .catch((error) => {
+        this.setState({ instructors: [] });
+      });
   }
 
   fetchStudents(){
-    fetch('/api/v1/students/')
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({ students: result });
-        },
+    axios.get('/api/v1/students/', {})
+      .then(({data}) => {
+        console.log(JSON.stringify(data))
 
-        (error) => {
-          this.setState({ students: [] });
-        }
-      )
+        this.setState({ students: data });
+      })
+      .catch((error) => {
+        alert(error.message)
+        this.setState({ students: [] });
+      });      
   }
 
   render(){

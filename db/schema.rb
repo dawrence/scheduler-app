@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_20_060138) do
+ActiveRecord::Schema.define(version: 2021_02_26_201226) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,15 @@ ActiveRecord::Schema.define(version: 2021_02_20_060138) do
     t.boolean "test", default: false
     t.string "license_type"
     t.string "class_type", default: "practice"
+  end
+
+  create_table "fines", force: :cascade do |t|
+    t.integer "student_id"
+    t.integer "kind", default: 0
+    t.float "value", default: 0.0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["student_id"], name: "index_fines_on_student_id"
   end
 
   create_table "instructors", force: :cascade do |t|
@@ -50,6 +59,7 @@ ActiveRecord::Schema.define(version: 2021_02_20_060138) do
     t.datetime "updated_at", null: false
     t.string "id_number", null: false
     t.integer "available_hours", default: 0
+    t.boolean "debtor", default: false
   end
 
   create_table "users", force: :cascade do |t|
