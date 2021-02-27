@@ -3,12 +3,13 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  
   unauthenticated :user do
     devise_scope :user do
       get "/" => "devise/sessions#new"
     end
   end
+
+  resources :students, only: %i[show]
 
   root to: 'appointments#index'
 

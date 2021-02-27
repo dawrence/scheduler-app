@@ -104,6 +104,14 @@ class Appointment < ApplicationRecord
     end
   end
 
+  def display_date
+    start_at.strftime('%A, %b %e')
+  end
+
+  def display_hour
+    "#{start_at.strftime('%I:%M %P')} - #{end_at.strftime('%I:%M %P')}"
+  end
+
   def set_title
     self.title = "#{class_type_name} -
      #{license_type_name} - #{student.full_name}"

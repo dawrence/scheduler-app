@@ -186,7 +186,7 @@ class InstructorForm extends React.Component {
             </form>
           </div>
         </div>
-        <div className="col-12" style={{overflow: 'auto'}}>
+        <div className="col-12" style={{overflow: 'auto', height: '300px'}}>
           <InstructorList
             items={this.state.instructors}
             error={this.state.error}

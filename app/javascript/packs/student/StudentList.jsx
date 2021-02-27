@@ -52,7 +52,7 @@ function StudentList(props) {
               return (
                 <tr key={`student-${item.id}`} onClick={(e) => selectStudent(item)}>
                   <td>
-                    <span>{item.full_name}</span>
+                    <span><a href={`/students/${item.id}`} target='_blank'>{item.full_name}</a></span>
                   </td>
                   <td>
                     <span>{item.id_number}</span>

@@ -23,24 +23,7 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
   <body>
-    <nav>
-      <div class="nav-wrapper">
-        <a href="<%= root_path %>" class="brand-logo">
-          <%= image_tag 'logo.png' %>
-          Calendario Rodando
-        </a>
-        <% if user_signed_in? %>
-          <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li>
-              <%= link_to(destroy_user_session_path, method: :delete, class: "grey-text text-darken-4") do %>
-                <i class="material-icons">logout</i>
-              <% end %>
-            </li>
-          </ul>
-        <% end %>
-      </div>
-    </nav>
-    <main role="main" class="container" style='margin-bottom: 2rem'>
+    <main role="main" class="container">
       <% if notice.present? %>
         <div class="card-panel blue lighten-2 notice">
           <span class="white-text"><%= notice %></span>
