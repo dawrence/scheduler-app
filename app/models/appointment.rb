@@ -105,11 +105,15 @@ class Appointment < ApplicationRecord
   end
 
   def display_date
-    start_at.strftime('%A, %b %e')
+    # TODO: Tech debt. The timezone should be Colombia for all
+
+    start_at.localtime('-05:00').strftime('%A, %b %e')
   end
 
   def display_hour
-    "#{start_at.strftime('%I:%M %P')} - #{end_at.strftime('%I:%M %P')}"
+    # TODO: Tech debt. The timezone should be Colombia for all
+
+    "#{start_at.localtime('-05:00').strftime('%I:%M %P')} - #{end_at.localtime('-05:00').strftime('%I:%M %P')}"
   end
 
   def set_title
