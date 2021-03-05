@@ -97,7 +97,7 @@ class VehicleForm extends React.Component {
   render() {
     return (
       <>
-        {
+        { 
           CurrentUserHelper.canPerform(this.state.currentUser) &&
           <div className="row">
             <div className="col m12">
@@ -167,7 +167,7 @@ class VehicleForm extends React.Component {
         }
         {
           CurrentUserHelper.canPerform(this.state.currentUser) &&
-          <div className="col-12" style={{overflow: 'auto',  height: '300px'}}>
+          <div className="col-12" style={{overflow: 'auto'}}>
             <VehicleList items={this.state.vehicles} error={this.state.error} itemsLoaded={this.state.loaded} selectItem={this.selectVehicle}/>
           </div>
         }

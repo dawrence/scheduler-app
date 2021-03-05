@@ -263,15 +263,14 @@ class StudentForm extends React.Component {
             </div>
           </div>
         }
-        <div className="col-12" style={
-            CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? {overflow: 'auto'} : {overflow: 'auto', height: '300px'}}>
+        <div className="col-12" style={{overflow: 'auto'}}>
           <StudentList
             currentUser={this.state.currentUser}
             items={this.state.students}
             error={this.state.error}
             itemsLoaded={this.state.loaded}
             selectItem={this.selectStudent}
-            deleteItem={this.deleteStudent}
+            deleteItem={this.deleteStudent} 
             markAsDebtor={(e, id) => {
               this.setState({ openDialog: true, label: "¿Por que será marcado como moroso?." });
               this.onAccept = () => this.markStudent(e, id)
@@ -283,19 +282,19 @@ class StudentForm extends React.Component {
             payFine={(e, id) => {
               this.setState({ openDialog: true, label: "Descripción del pago de la multa." });
               this.onAccept = () => this.payFineStudent(e, id);
-            }}
+            }} 
             setFine={(e, id) => {
               this.setState({ openDialog: true, label: "Motivo por el que se genera la multa." });
               this.onAccept = () => this.setFineStudent(e, id);
-            }}
+            }} 
           />
         </div>
-        <TextAreaDialog
-          label={this.state.label}
+        <TextAreaDialog 
+          label={this.state.label} 
           open={this.state.openDialog}
           justification={this.state.justification}
-          onChange={this.onChangeJustification}
-          onAccept={this.onAccept}
+          onChange={this.onChangeJustification} 
+          onAccept={this.onAccept} 
           handleClose={this.closeDialog}
         />
       </>

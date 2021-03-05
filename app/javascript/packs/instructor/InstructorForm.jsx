@@ -195,7 +195,7 @@ class InstructorForm extends React.Component {
         }
         {
           CurrentUserHelper.canPerform(this.state.currentUser, "admin", "treasurer") &&
-          <div className="col-12" style={{overflow: 'auto', height: '300px'}}>
+          <div className="col-12" style={{overflow: 'auto'}}>
             <InstructorList
               items={this.state.instructors}
               error={this.state.error}
