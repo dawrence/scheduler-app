@@ -1,13 +1,8 @@
 import React from 'react'
 import StudentList from './StudentList'
-import ErrorDialog from '../dialogs/ErrorDialog';
+import TextAreaDialog from '../dialogs/TextAreaDialog';
+import CurrentUserHelper from '../helpers/CurrentUserHelper';
 import axios from 'axios';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
 
 
 class StudentForm extends React.Component {
@@ -30,7 +25,9 @@ class StudentForm extends React.Component {
       error: null,
       students: [],
       loaded: false,
-      openDialog: false
+      openDialog: false,
+      justification: "",
+      label: "",
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -44,10 +41,21 @@ class StudentForm extends React.Component {
     this.setFineStudent = this.setFineStudent.bind(this);
     this.payFineStudent = this.payFineStudent.bind(this);
     this.closeDialog = this.closeDialog.bind(this);
+    this.onChangeJustification = this.onChangeJustification.bind(this);
+    this.resetDialogJustification = this.resetDialogJustification.bind(this);
+    this.onAccept = () => {};
   }
-  
+
   closeDialog() {
     this.setState({openDialog: false})
+  }
+
+  onChangeJustification({ target: { value } }) {
+    this.setState({ justification: value })
+  }
+
+  resetDialogJustification() {
+    this.setState({ justification: '' })
   }
 
   newRecord(ev) {
@@ -73,49 +81,39 @@ class StudentForm extends React.Component {
           currentUser: data,
         })
       })
-      .catch((error) => {
-        this.setState({
-          error: error.message,
-          loaded: false,
-          openDialog: true
-        })
-      })
+      .catch((error) => alert(error));
   }
 
   markStudent(e, id) {
-    if( confirm('¿Desea marcar cómo moroso al Estudiante seleccionado?')){
-      return axios.get(`/api/v1/students/${id}/debtor/mark`, {}).then(() => {
-        this.fetchItems();
-        this.forceUpdate();
-      })
-    }
+    return axios.post(`/api/v1/students/${id}/debtor/mark`, { content: this.state.justification }).then(() => {
+      this.resetDialogJustification();
+      this.fetchItems();
+      this.forceUpdate();
+    }).catch((error) => alert(error));
   }
 
   unmarkStudent(e, id) {
-    if (confirm('¿Desea desmarcar cómo moroso al Estudiante seleccionado?')){
-      return axios.get(`/api/v1/students/${id}/debtor/unmark`, {}).then(() => {
-        this.fetchItems();
-        this.forceUpdate();
-      })
-    }
+    return axios.post(`/api/v1/students/${id}/debtor/unmark`, { content: this.state.justification }).then(() => {
+      this.resetDialogJustification();
+      this.fetchItems();
+      this.forceUpdate();
+    }).catch((error) => alert(error));
   }
 
   setFineStudent(e, id) {
-    if( confirm('¿Desea adicionar una multa al Estudiante seleccionado?')){
-      return axios.get(`/api/v1/students/${id}/fine/set`, {}).then(() => {
-        this.fetchItems();
-        this.forceUpdate();
-      })
-    }
+    return axios.post(`/api/v1/students/${id}/fine/set`, { content: this.state.justification }).then(() => {
+      this.resetDialogJustification();
+      this.fetchItems();
+      this.forceUpdate();
+    }).catch((error) => alert(error));
   }
 
   payFineStudent(e, id) {
-    if( confirm('¿Desea pagar una multa del Estudiante seleccionado?')){
-      return axios.get(`/api/v1/students/${id}/fine/pay`, {}).then(() => {
-        this.fetchItems();
-        this.forceUpdate();
-      })
-    }
+    return axios.post(`/api/v1/students/${id}/fine/pay`, { content: this.state.justification }).then(() => {
+      this.resetDialogJustification();
+      this.fetchItems();
+      this.forceUpdate();
+    }).catch((error) => alert(error));
   }
 
   deleteStudent(e, id) {
@@ -128,19 +126,19 @@ class StudentForm extends React.Component {
   }
 
   handleSubmit(ev) {
-    const url = this.state.student.id ? `/api/v1/students/${this.state.student.id}` : '/api/v1/students'
     const requestOptions = {
-        method: this.state.student.id ? 'PATCH' : 'POST',
+        url: this.state.student.id ? `/api/v1/students/${this.state.student.id}` : '/api/v1/students',
+        method: this.state.student.id ? 'patch' : 'post',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student: this.state.student })
+        data: JSON.stringify({ student: this.state.student })
     };
-    fetch(url, requestOptions)
-        .then(response => response.json())
-        .then(data => {
-          this.setState({ student: data })
-          this.fetchItems();
-          this.forceUpdate();
-        });
+    axios(requestOptions)
+      .then(({ data }) => {
+        this.setState({ student: data })
+        this.fetchItems();
+        this.forceUpdate();
+      })
+      .catch((error) => alert(error));
     ev.preventDefault();
     this.forceUpdate();
   }
@@ -162,13 +160,7 @@ class StudentForm extends React.Component {
           loaded: true
         })
       })
-      .catch((error) => {
-        this.setState({
-          error: error.message,
-          loaded: false,
-          openDialog: true
-        })
-      });
+      .catch((error) => alert(error));
   }
 
   handleChange(evt) {
@@ -185,103 +177,126 @@ class StudentForm extends React.Component {
   render() {
     return (
       <>
-        <div className="row">
-          <div className="col m12">
-            <form onSubmit={this.handleSubmit}>
-              <div className="card">
-                <div className="card-content">
-                  <div className="row">
-                    <div className="col m8 offset-m2 center-align">
-                      <span className="card-title">Estudiantes</span>
-                    </div>
-                  </div>
-                  <div className="container">
+        {
+          CurrentUserHelper.canPerform(this.state.currentUser, "admin", "scheduler") &&
+          <div className="row">
+            <div className="col m12">
+              <form onSubmit={this.handleSubmit}>
+                <div className="card">
+                  <div className="card-content">
                     <div className="row">
-                      <div className="col m12 offset-m2">
-                        <div className="form-group">
-                          <label htmlFor="full_name">Nombre Completo</label>
-                          <input type='text'
-                                required={true}
-                                name='full_name'
-                                value={ this.state.student.full_name || '' }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Nombre completo" />
-                          <label htmlFor="id_number">Cédula</label>
-                          <input type='text'
-                                required={true}
-                                name='id_number'
-                                value={ this.state.student.id_number || '' }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Cedula" />
-                          {/* <label htmlFor="email">Email</label>
-                          <input type='text'
-                                name='email'
-                                value={ this.state.student.email || '' }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Email" />
+                      <div className="col m8 offset-m2 center-align">
+                        <span className="card-title">Estudiantes</span>
+                      </div>
+                    </div>
+                    <div className="container">
+                      <div className="row">
+                        <div className="col m12 offset-m2">
+                          <div className="form-group">
+                            <label htmlFor="full_name">Nombre Completo</label>
+                            <input type='text'
+                                  required={true}
+                                  name='full_name'
+                                  value={ this.state.student.full_name || '' }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Nombre completo" />
+                            <label htmlFor="id_number">Cédula</label>
+                            <input type='text'
+                                  required={true}
+                                  name='id_number'
+                                  value={ this.state.student.id_number || '' }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Cedula" />
+                            {/* <label htmlFor="email">Email</label>
+                            <input type='text'
+                                  name='email'
+                                  value={ this.state.student.email || '' }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Email" />
 
-                          <label htmlFor="phone">Telefono</label>
-                          <input type='text'
-                                name='phone'
-                                value={ this.state.student.phone || '' }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Telefono"/>
+                            <label htmlFor="phone">Telefono</label>
+                            <input type='text'
+                                  name='phone'
+                                  value={ this.state.student.phone || '' }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Telefono"/>
 
-                          <label htmlFor="age">Edad</label>
-                          <input type='number'
-                                name='age'
-                                value={ this.state.student.age || 0 }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Edad" /> */}
+                            <label htmlFor="age">Edad</label>
+                            <input type='number'
+                                  name='age'
+                                  value={ this.state.student.age || 0 }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Edad" /> */}
 
-                          <label htmlFor="licenseType">Tipo de licencia</label>
-                          <select name="license_type" className="form-control" id="licenseType" onChange={this.handleChange}>
-                            <option selected={this.state.student.license_type === 'a2'} value="a2">A2: Moto</option>
-                            <option selected={this.state.student.license_type === 'b1'} value="b1">B1: Vehiculo Particular</option>
-                            <option selected={this.state.student.license_type === 'c1'} value="c1">C1: Vehiculo Publico</option>
-                            <option selected={this.state.student.license_type === 'a2b1'} value="a2b1">A2 y B1</option>
-                            <option selected={this.state.student.license_type === 'a2c1'} value="a2c1">A2 y C1</option>
-                          </select>
-                          <input type='number'
-                                disabled={true}
-                                value={ this.state.student.available_hours }
-                                className='validate form-control'
-                                onChange={() => {}}
-                                placeholder="Horas disponibles" />
-                        </div>
-                        <div className='form-group'>
-                          <button type="submit" className="waves-effect waves-light btn">Guardar</button>
-                        </div>
-                        <div className='form-group'>
-                          <button className="waves-effect waves-light btn" onClick={this.newRecord}>Nuevo</button>
+                            <label htmlFor="licenseType">Tipo de licencia</label>
+                            <select name="license_type" className="form-control" id="licenseType" onChange={this.handleChange}>
+                              <option selected={this.state.student.license_type === 'a2'} value="a2">A2: Moto</option>
+                              <option selected={this.state.student.license_type === 'b1'} value="b1">B1: Vehiculo Particular</option>
+                              <option selected={this.state.student.license_type === 'c1'} value="c1">C1: Vehiculo Publico</option>
+                              <option selected={this.state.student.license_type === 'a2b1'} value="a2b1">A2 y B1</option>
+                              <option selected={this.state.student.license_type === 'a2c1'} value="a2c1">A2 y C1</option>
+                            </select>
+                            <input type='number'
+                                  disabled={true}
+                                  value={ this.state.student.available_hours }
+                                  className='validate form-control'
+                                  onChange={() => {}}
+                                  placeholder="Horas disponibles" />
+                          </div>
+                          <div className='form-group'>
+                            <button type="submit" className="waves-effect waves-light btn">Guardar</button>
+                          </div>
+                          <div className='form-group'>
+                            <button className="waves-effect waves-light btn" onClick={this.newRecord}>Nuevo</button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
-        </div>
+        }
         <div className="col-12" style={{overflow: 'auto', height: '300px'}}>
           <StudentList
+            currentUser={this.state.currentUser}
             items={this.state.students}
             error={this.state.error}
             itemsLoaded={this.state.loaded}
             selectItem={this.selectStudent}
-            deleteItem={this.deleteStudent} 
-            markAsDebtor={this.markStudent} 
-            unmarkAsDebtor={this.unmarkStudent} 
-            payFine={this.payFineStudent} 
-            setFine={this.setFineStudent} 
+            deleteItem={this.deleteStudent}
+            markAsDebtor={(e, id) => {
+              this.setState({ openDialog: true, label: "¿Por que será marcado como moroso?." });
+              this.onAccept = () => this.markStudent(e, id)
+            }}
+            unmarkAsDebtor={(e, id) => {
+              this.setState({ openDialog: true, label: "¿Por que deja de ser moroso?." });
+              this.onAccept = () => this.unmarkStudent(e, id)
+            }}
+            payFine={(e, id) => {
+              this.setState({ openDialog: true, label: "Descripción del pago de la multa." });
+              this.onAccept = () => this.payFineStudent(e, id);
+            }}
+            setFine={(e, id) => {
+              this.setState({ openDialog: true, label: "Motivo por el que se genera la multa." });
+              this.onAccept = () => this.setFineStudent(e, id);
+            }}
           />
         </div>
-        <ErrorDialog message={this.state.error} open={this.state.openDialog} handleClose={this.closeDialog}/>
+        <TextAreaDialog
+          label={this.state.label}
+          open={this.state.openDialog}
+          justification={this.state.justification}
+          onChange={this.onChangeJustification}
+          onAccept={this.onAccept}
+          handleClose={this.closeDialog}
+        />
       </>
     );
   }

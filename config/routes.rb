@@ -27,10 +27,10 @@ Rails.application.routes.draw do
         get 'available'
       end
       resources :students, only: %i[index create update destroy] do
-        get :mark_as_debtor, on: :member, path: 'debtor/mark'
-        get :unmark_as_debtor, on: :member, path: 'debtor/unmark'
-        get :set_fine, on: :member, path: 'fine/set'
-        get :pay_fine, on: :member, path: 'fine/pay'
+        post :mark_as_debtor, on: :member, path: 'debtor/mark'
+        post :unmark_as_debtor, on: :member, path: 'debtor/unmark'
+        post :set_fine, on: :member, path: 'fine/set'
+        post :pay_fine, on: :member, path: 'fine/pay'
       end
       namespace :students do
         get 'available'

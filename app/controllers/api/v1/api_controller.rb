@@ -22,11 +22,16 @@ module Api
       # can_perform(:admin, ... roleX, ... roleY) => Specific Roles
       def can_perform *roles
         permission = user_signed_in?
-        puts permission
         if roles.any?
-          permission &&= roles.inject(false){|bool_value, role| bool_value || current_user.send("#{role}?")}
+          permission &&= roles.include?(current_user.role.to_sym)
         end
         permission
+      end
+
+      def raise_unless_authorized *roles
+        unless can_perform(*roles)
+          raise ApiErrors::Unauthorized
+        end
       end
 
     end

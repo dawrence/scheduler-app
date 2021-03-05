@@ -1,5 +1,6 @@
 import React from 'react'
 import InstructorList from './InstructorList'
+import CurrentUserHelper from '../helpers/CurrentUserHelper';
 import axios from 'axios';
 
 class InstructorForm extends React.Component {
@@ -24,6 +25,7 @@ class InstructorForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchItems = this.fetchItems.bind(this);
     this.selectInstructor = this.selectInstructor.bind(this);
+    this.fetchCurrentUser = this.fetchCurrentUser.bind(this);
     this.newRecord = this.newRecord.bind(this);
     this.deleteInstructor = this.deleteInstructor.bind(this);
   }
@@ -43,6 +45,16 @@ class InstructorForm extends React.Component {
     this.forceUpdate();
   }
 
+  fetchCurrentUser() {
+    axios.get("/api/v1/active_user", {})
+      .then(({ data }) => {
+        this.setState({
+          currentUser: data,
+        })
+      })
+      .catch((error) => alert(error));
+  }
+
   deleteInstructor(e, id) {
     if( confirm('Desea borrar el instructor seleccionado?')){
       return axios.delete(`/api/v1/instructors/${id}`, {}).then(() => {
@@ -53,45 +65,37 @@ class InstructorForm extends React.Component {
   }
 
   handleSubmit(ev) {
-    const url = this.state.instructor.id ? `/api/v1/instructors/${this.state.instructor.id}` : '/api/v1/instructors'
     const requestOptions = {
+        url: this.state.instructor.id ? `/api/v1/instructors/${this.state.instructor.id}` : '/api/v1/instructors',
         method: this.state.instructor.id ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ instructor: this.state.instructor })
+        data: JSON.stringify({ instructor: this.state.instructor })
     };
-    fetch(url, requestOptions)
-        .then(response => response.json())
-        .then(data => {
-          this.setState({ instructor: data })
-          this.fetchItems();
-          this.forceUpdate();
-        });
+    axios(requestOptions)
+      .then(({ data }) => {
+        this.setState({ instructor: data })
+        this.fetchItems();
+        this.forceUpdate();
+      })
+      .catch((error) => alert(error));
     ev.preventDefault();
     this.forceUpdate();
   }
 
   componentDidMount(){
     this.fetchItems();
+    this.fetchCurrentUser();
   }
 
   fetchItems(){
-    fetch("/api/v1/instructors")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            instructors: result,
-            loaded: true
-          })
-        },
-
-        (error) => {
-          this.setState({
-            error: error,
-            loaded: false
-          })
-        }
-      )
+    axios.get("/api/v1/instructors")
+      .then(({data}) => {
+        this.setState({
+          instructors: data,
+          loaded: true
+        })
+      })
+      .catch((error) => alert(error));
   }
 
   selectInstructor(instructor) {
@@ -108,92 +112,98 @@ class InstructorForm extends React.Component {
   render() {
     return (
       <>
-        <div className="col-12 row">
-          <div className="col-12">
-            <form onSubmit={this.handleSubmit}>
-              <div className="card">
-                <div className="card-content">
-                  <div className="row">
-                    <div className="col m8 offset-m2 center-align">
-                      <span className="card-title">Instructores</span>
-                    </div>
-                  </div>
-                  <div className="container">
+        {
+          CurrentUserHelper.canPerform(this.state.currentUser, "admin", "treasurer") &&
+          <div className="col-12 row">
+            <div className="col-12">
+              <form onSubmit={this.handleSubmit}>
+                <div className="card">
+                  <div className="card-content">
                     <div className="row">
-                      <div className="col m12 offset-m2">
-                        <div className="form-group">
-                          <label htmlFor="full_name">Nombre Completo</label>
-                          <input type='text'
-                                required={true}
-                                name='full_name'
-                                value={ this.state.instructor.full_name || '' }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Nombre completo" />
-                          <label htmlFor="id_number">Cédula</label>
-                          <input type='text'
-                                required={true}
-                                name='id_number'
-                                value={ this.state.instructor.id_number || '' }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Cedula" />
-                          {/* <label htmlFor="email">Email</label>
-                          <input type='text'
-                                name='email'
-                                value={ this.state.instructor.email || '' }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Email" />
+                      <div className="col m8 offset-m2 center-align">
+                        <span className="card-title">Instructores</span>
+                      </div>
+                    </div>
+                    <div className="container">
+                      <div className="row">
+                        <div className="col m12 offset-m2">
+                          <div className="form-group">
+                            <label htmlFor="full_name">Nombre Completo</label>
+                            <input type='text'
+                                  required={true}
+                                  name='full_name'
+                                  value={ this.state.instructor.full_name || '' }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Nombre completo" />
+                            <label htmlFor="id_number">Cédula</label>
+                            <input type='text'
+                                  required={true}
+                                  name='id_number'
+                                  value={ this.state.instructor.id_number || '' }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Cedula" />
+                            {/* <label htmlFor="email">Email</label>
+                            <input type='text'
+                                  name='email'
+                                  value={ this.state.instructor.email || '' }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Email" />
 
-                          <label htmlFor="phone">Telefono</label>
-                          <input type='text'
-                                name='phone'
-                                value={ this.state.instructor.phone || '' }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Telefono"/> */}
+                            <label htmlFor="phone">Telefono</label>
+                            <input type='text'
+                                  name='phone'
+                                  value={ this.state.instructor.phone || '' }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Telefono"/> */}
 
-                          <label htmlFor="licenseType">Tipo de licencia</label>
-                          <select name="license_type" className="form-control" id="licenseType" onChange={this.handleChange}>
-                            <option selected={this.state.instructor.license_type === 'a2'} value="a2">A2: Moto</option>
-                            <option selected={this.state.instructor.license_type === 'b1'} value="b1">B1: Vehiculo Particular</option>
-                            <option selected={this.state.instructor.license_type === 'c1'} value="c1">C1: Vehiculo Publico</option>
-                            <option selected={this.state.instructor.license_type === 'a2b1'} value="a2b1">A2 y B1</option>
-                            <option selected={this.state.instructor.license_type === 'b1c1'} value="b1c1">B1 y C1</option>
-                            <option selected={this.state.instructor.license_type === 'a2b1c1'} value="a2b1c1">A2, B1 y C1</option>
-                          </select>
+                            <label htmlFor="licenseType">Tipo de licencia</label>
+                            <select name="license_type" className="form-control" id="licenseType" onChange={this.handleChange}>
+                              <option selected={this.state.instructor.license_type === 'a2'} value="a2">A2: Moto</option>
+                              <option selected={this.state.instructor.license_type === 'b1'} value="b1">B1: Vehiculo Particular</option>
+                              <option selected={this.state.instructor.license_type === 'c1'} value="c1">C1: Vehiculo Publico</option>
+                              <option selected={this.state.instructor.license_type === 'a2b1'} value="a2b1">A2 y B1</option>
+                              <option selected={this.state.instructor.license_type === 'b1c1'} value="b1c1">B1 y C1</option>
+                              <option selected={this.state.instructor.license_type === 'a2b1c1'} value="a2b1c1">A2, B1 y C1</option>
+                            </select>
 
-                          <label htmlFor="available_hours">Horas Disponibles</label>
-                          <input type='number'
-                                name='available_hours'
-                                value={ this.state.instructor.available_hours }
-                                onChange={this.handleChange}
-                                className='validate form-control'
-                                placeholder="Horas disponibles" />
-                        </div>
-                        <div className='form-group'>
-                          <button type="submit" className="waves-effect waves-light btn">Guardar</button>
-                        </div>
-                        <div className='form-group'>
-                          <button className="waves-effect waves-light btn" onClick={this.newRecord}>Nuevo</button>
+                            <label htmlFor="available_hours">Horas Disponibles</label>
+                            <input type='number'
+                                  name='available_hours'
+                                  value={ this.state.instructor.available_hours }
+                                  onChange={this.handleChange}
+                                  className='validate form-control'
+                                  placeholder="Horas disponibles" />
+                          </div>
+                          <div className='form-group'>
+                            <button type="submit" className="waves-effect waves-light btn">Guardar</button>
+                          </div>
+                          <div className='form-group'>
+                            <button className="waves-effect waves-light btn" onClick={this.newRecord}>Nuevo</button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
-        </div>
-        <div className="col-12" style={{overflow: 'auto', height: '300px'}}>
-          <InstructorList
-            items={this.state.instructors}
-            error={this.state.error}
-            itemsLoaded={this.state.loaded}
-            selectItem={this.selectInstructor}
-            deleteItem={this.deleteInstructor}/>
-        </div>
+        }
+        {
+          CurrentUserHelper.canPerform(this.state.currentUser, "admin", "treasurer") &&
+          <div className="col-12" style={{overflow: 'auto', height: '300px'}}>
+            <InstructorList
+              items={this.state.instructors}
+              error={this.state.error}
+              itemsLoaded={this.state.loaded}
+              selectItem={this.selectInstructor}
+              deleteItem={this.deleteInstructor}/>
+          </div>
+        }
       </>
     );
   }

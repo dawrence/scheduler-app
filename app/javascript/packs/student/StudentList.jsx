@@ -5,10 +5,19 @@ import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import { Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { red } from '@material-ui/core/colors';
 import numeral from 'numeral';
+import CurrentUserHelper from '../helpers/CurrentUserHelper';
 
+const useStyles = makeStyles({
+  restrictedStudent: {
+    backgroundColor: red[50],
+  },
+});
 
-function StudentList(props) {
+function StudentList({currentUser, ...props}) {
+  const classes = useStyles();
   const items = props.items;
   const selectStudent = props.selectItem;
   const deleteStudent = props.deleteItem
@@ -44,13 +53,20 @@ function StudentList(props) {
             <th scope="col">Licencia</th>
             <th scope="col">Horas disponibles</th>
             <th scope="col">Horas Asignadas</th>
-            <th scope="col"> Actions </th>
+            {
+              CurrentUserHelper.canPerform(currentUser, "admin", "scheduler") &&
+              <th scope="col"> Actions </th>
+            }
           </tr>
         </thead>
         <tbody>
         { items.length > 0 && items.map(item => {
               return (
-                <tr key={`student-${item.id}`} onClick={(e) => selectStudent(item)}>
+                <tr 
+                  key={`student-${item.id}`} 
+                  className={item.is_debtor_or_has_fines ? classes.restrictedStudent : {}} 
+                  onClick={(e) => selectStudent(item)}
+                >
                   <td>
                     <span><a href={`/students/${item.id}`} target='_blank'>{item.full_name}</a></span>
                   </td>
@@ -83,16 +99,32 @@ function StudentList(props) {
                   <td>
                     <span>{item.assigned_hours}</span>
                   </td>
-                  <td>
-                    {item.assigned_hours === 0 && ( <DeleteIcon onClick={(ev) => deleteStudent(ev, item.id)}/> )}
-                    {
-                      item.debtor
-                        ? <AssignmentLateIcon color={"error"} onClick={(ev) => unmarkAsDebtor(ev, item.id)}/>
-                        : <AssignmentTurnedInIcon onClick={(ev) => markAsDebtor(ev, item.id)}/>
-                    }
-                    <NewReleasesIcon onClick={(ev) => setFine(ev, item.id)}/>
-                    {item.total_fines > 0 && <AttachMoneyIcon onClick={(ev) => payFine(ev, item.id)}/>}
-                  </td>
+                  {
+                    CurrentUserHelper.canPerform(currentUser) &&
+                    <td>
+                      {
+                        item.assigned_hours === 0 && 
+                        <DeleteIcon onClick={(ev) => deleteStudent(ev, item.id)}/> 
+                      }
+                      {
+                        CurrentUserHelper.canPerform(currentUser, "admin", "treasurer") &&
+                        (
+                          item.debtor
+                          ? <AssignmentLateIcon color={"error"} onClick={(ev) => unmarkAsDebtor(ev, item.id)}/>
+                          : <AssignmentTurnedInIcon onClick={(ev) => markAsDebtor(ev, item.id)}/>
+                        )
+                      }
+                      {
+                        CurrentUserHelper.canPerform(currentUser, "admin", "treasurer") &&
+                        <NewReleasesIcon onClick={(ev) => setFine(ev, item.id)}/>
+                      }
+                      {
+                        (CurrentUserHelper.canPerform(currentUser, "admin", "treasurer") && item.total_fines > 0) &&
+                        <AttachMoneyIcon onClick={(ev) => payFine(ev, item.id)}/>
+                      }
+                    </td>
+                  }
+
                 </tr>
               );
           })
