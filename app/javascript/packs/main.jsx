@@ -45,19 +45,19 @@ class Main extends React.Component {
             <Navbar.Collapse id="responsive-navbar-nav">
               <Nav className="mr-auto">
                 {
-                  CurrentUserHelper.canPerform(this.state.currentUser) &&
+                  CurrentUserHelper.canPerform(this.state.currentUser, 'admin', 'scheduler') &&
                   <Link className="nav-link" to="/">Calendario</Link>
                 }
                 {
                   CurrentUserHelper.canPerform(this.state.currentUser) &&
-                  <Link className="nav-link" to="/students">Estudiantes</Link>
+                  <Link className="nav-link" to={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>Estudiantes</Link>
                 }
                 {
-                  CurrentUserHelper.canPerform(this.state.currentUser, "admin", "treasurer") &&
+                  CurrentUserHelper.canPerform(this.state.currentUser, "admin") &&
                   <Link className="nav-link" to="/instructors">Instructores</Link>
                 }
                 {
-                  CurrentUserHelper.canPerform(this.state.currentUser) &&
+                  CurrentUserHelper.canPerform(this.state.currentUser, 'admin', 'scheduler') &&
                   <Link className="nav-link" to="/vehicles">Vehiculos</Link>
                 }
               </Nav>
@@ -69,24 +69,24 @@ class Main extends React.Component {
           <Switch>
             {
               CurrentUserHelper.canPerform(this.state.currentUser) &&
-              <Route path="/students">
+              <Route path={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>
                 <StudentForm />
               </Route>
             }
             {
-              CurrentUserHelper.canPerform(this.state.currentUser, "admin", "treasurer") &&
+              CurrentUserHelper.canPerform(this.state.currentUser, "admin") &&
               <Route path="/instructors">
                 <InstructorForm />
               </Route>
             }
             {
-              CurrentUserHelper.canPerform(this.state.currentUser) &&
+              CurrentUserHelper.canPerform(this.state.currentUser, 'admin', 'scheduler') &&
               <Route path="/vehicles">
                 <VehicleForm />
               </Route>
             }
             {
-              CurrentUserHelper.canPerform(this.state.currentUser) &&
+              CurrentUserHelper.canPerform(this.state.currentUser, "admin", "scheduler") &&
               <Route path="/">
                 <AppScheduler name="AppScheduler" />
               </Route>

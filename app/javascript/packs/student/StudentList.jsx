@@ -54,7 +54,7 @@ function StudentList({currentUser, ...props}) {
             <th scope="col">Horas disponibles</th>
             <th scope="col">Horas Asignadas</th>
             {
-              CurrentUserHelper.canPerform(currentUser, "admin", "scheduler") &&
+              CurrentUserHelper.canPerform(currentUser) &&
               <th scope="col"> Actions </th>
             }
           </tr>
@@ -62,9 +62,9 @@ function StudentList({currentUser, ...props}) {
         <tbody>
         { items.length > 0 && items.map(item => {
               return (
-                <tr 
-                  key={`student-${item.id}`} 
-                  className={item.is_debtor_or_has_fines ? classes.restrictedStudent : {}} 
+                <tr
+                  key={`student-${item.id}`}
+                  className={item.is_debtor_or_has_fines ? classes.restrictedStudent : {}}
                   onClick={(e) => selectStudent(item)}
                 >
                   <td>
@@ -103,8 +103,9 @@ function StudentList({currentUser, ...props}) {
                     CurrentUserHelper.canPerform(currentUser) &&
                     <td>
                       {
-                        item.assigned_hours === 0 && 
-                        <DeleteIcon onClick={(ev) => deleteStudent(ev, item.id)}/> 
+                        item.assigned_hours === 0 &&
+                        CurrentUserHelper.canPerform(currentUser, "admin", "scheduler") &&
+                        <DeleteIcon onClick={(ev) => deleteStudent(ev, item.id)}/>
                       }
                       {
                         CurrentUserHelper.canPerform(currentUser, "admin", "treasurer") &&
