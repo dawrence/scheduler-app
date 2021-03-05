@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import AppScheduler from './AppScheduler'
+import ActionLogList from './ActionLog/ActionLogList'
 import InstructorForm from './instructor/InstructorForm'
 import StudentForm from './student/StudentForm'
 import VehicleForm from './vehicle/VehicleForm'
@@ -60,6 +61,10 @@ class Main extends React.Component {
                   CurrentUserHelper.canPerform(this.state.currentUser, 'admin', 'scheduler') &&
                   <Link className="nav-link" to="/vehicles">Vehiculos</Link>
                 }
+                {
+                  CurrentUserHelper.canPerform(this.state.currentUser) &&
+                  <Link className="nav-link" to="/action_logs">Log de acciones</Link>
+                }
               </Nav>
             </Navbar.Collapse>
           </Navbar>
@@ -86,7 +91,13 @@ class Main extends React.Component {
               </Route>
             }
             {
-              CurrentUserHelper.canPerform(this.state.currentUser, "admin", "scheduler") &&
+              CurrentUserHelper.canPerform(this.state.currentUser) &&
+              <Route path="/action_logs">
+                <ActionLogList />
+              </Route>
+            }
+            {
+              CurrentUserHelper.canPerform(this.state.currentUser) &&
               <Route path="/">
                 <AppScheduler name="AppScheduler" />
               </Route>

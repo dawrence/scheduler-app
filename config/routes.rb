@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get :active_user, to: 'users#active_user'
+      resources :action_logs, only: %i[index]
       resources :appointments, only: %i[index create destroy update]
       resources :vehicles, only: %i[index create update]
       namespace :vehicles do
