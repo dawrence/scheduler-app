@@ -6,7 +6,7 @@ class ActionLogSerializer < ActiveModel::Serializer
   belongs_to :student
 
   def action
-    object.action.downcase
+    object.action.capitalize
   end
 
   def user_text
