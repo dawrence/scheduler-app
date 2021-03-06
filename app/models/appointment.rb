@@ -17,7 +17,7 @@ class Appointment < ApplicationRecord
   validate :validate_instructor_license_type
   validate :instructor_assigned_hours
   validate :student_assigned_hours
-  validate :student_is_good_standing
+  # validate :student_is_good_standing TODO: will be added next.
 
   def validate_appointment_uniqueness
     appointment_ids = Appointment.where(

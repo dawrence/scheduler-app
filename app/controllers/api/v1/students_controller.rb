@@ -16,13 +16,13 @@ module Api
       end
 
       def create
-          raise_unless_authorized(:admin, :scheduler)
+          raise_unless_authorized(:admin, :scheduler, :treasurer)
           student = Student.create!(safe_params)
           render json: student
       end
 
       def update
-        raise_unless_authorized(:admin, :scheduler)
+        raise_unless_authorized(:admin, :scheduler, :treasurer)
         student = Student.find_by!(id: params[:id])
         student.update!(safe_params)
         render json: student
@@ -67,7 +67,7 @@ module Api
         render json: student
       end
 
-      
+
       private
         def safe_params
           params.require(:student)
