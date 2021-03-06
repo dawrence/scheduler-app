@@ -11,6 +11,7 @@ class Student < ApplicationRecord
 
   has_many :appointments
   has_many :fines
+  has_many :action_logs
 
   validates :license_type, inclusion: { in: %w[a2 b1 c1 a2b1 a2c1] }
   validates_uniqueness_of :id_number
@@ -45,12 +46,17 @@ class Student < ApplicationRecord
     AVAILABLE_HOURS[license_type.to_sym]
   end
 
+  def is_debtor_or_has_fines
+    self.total_fines > 0 || self.debtor?    
+  end
+  alias :is_debtor_or_has_fines? :is_debtor_or_has_fines
+
   def total_fines
-    self.fines.count
+    self.fines.current.count
   end
 
   def total_fines_value
-    self.fines.sum(&:value)
+    self.fines.current.sum(&:value)
   end
 
   def set_fine
@@ -58,7 +64,7 @@ class Student < ApplicationRecord
   end
 
   def pay_fine
-    self.fines.order(created_at: :asc).first.destroy!
+    self.fines.current.order(created_at: :asc).first.pay
   end
 
   def mark_as_debtor

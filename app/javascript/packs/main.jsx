@@ -4,7 +4,8 @@ import AppScheduler from './AppScheduler'
 import InstructorForm from './instructor/InstructorForm'
 import StudentForm from './student/StudentForm'
 import VehicleForm from './vehicle/VehicleForm'
-
+import CurrentUserHelper from './helpers/CurrentUserHelper';
+import axios from 'axios';
 import { Navbar, Nav } from 'react-bootstrap';
 
 import {
@@ -17,6 +18,22 @@ import {
 class Main extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {}
+    this.fetchCurrentUser = this.fetchCurrentUser.bind(this);
+  }
+
+  fetchCurrentUser() {
+    axios.get("/api/v1/active_user", {})
+      .then(({ data }) => {
+        this.setState({
+          currentUser: data,
+        })
+      })
+      .catch((error) => alert(error));
+  }
+
+  componentDidMount() {
+    this.fetchCurrentUser();
   }
 
   render(){
@@ -27,10 +44,22 @@ class Main extends React.Component {
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
               <Nav className="mr-auto">
-                <Link className="nav-link" to="/">Calendario</Link>
-                <Link className="nav-link" to="/students">Estudiantes</Link>
-                <Link className="nav-link" to="/instructors">Instructores</Link>
-                <Link className="nav-link" to="/vehicles">Vehiculos</Link>
+                {
+                  CurrentUserHelper.canPerform(this.state.currentUser, 'admin', 'scheduler') &&
+                  <Link className="nav-link" to="/">Calendario</Link>
+                }
+                {
+                  CurrentUserHelper.canPerform(this.state.currentUser) &&
+                  <Link className="nav-link" to={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>Estudiantes</Link>
+                }
+                {
+                  CurrentUserHelper.canPerform(this.state.currentUser, "admin") &&
+                  <Link className="nav-link" to="/instructors">Instructores</Link>
+                }
+                {
+                  CurrentUserHelper.canPerform(this.state.currentUser, 'admin', 'scheduler') &&
+                  <Link className="nav-link" to="/vehicles">Vehiculos</Link>
+                }
               </Nav>
             </Navbar.Collapse>
           </Navbar>
@@ -38,18 +67,30 @@ class Main extends React.Component {
           {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
           <Switch>
-            <Route path="/students">
-              <StudentForm />
-            </Route>
-            <Route path="/instructors">
-              <InstructorForm />
-            </Route>
-            <Route path="/vehicles">
-              <VehicleForm />
-            </Route>
-            <Route path="/">
-              <AppScheduler name="AppScheduler" />
-            </Route>
+            {
+              CurrentUserHelper.canPerform(this.state.currentUser) &&
+              <Route path={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>
+                <StudentForm />
+              </Route>
+            }
+            {
+              CurrentUserHelper.canPerform(this.state.currentUser, "admin") &&
+              <Route path="/instructors">
+                <InstructorForm />
+              </Route>
+            }
+            {
+              CurrentUserHelper.canPerform(this.state.currentUser, 'admin', 'scheduler') &&
+              <Route path="/vehicles">
+                <VehicleForm />
+              </Route>
+            }
+            {
+              CurrentUserHelper.canPerform(this.state.currentUser, "admin", "scheduler") &&
+              <Route path="/">
+                <AppScheduler name="AppScheduler" />
+              </Route>
+            }
           </Switch>
         </div>
       </Router>

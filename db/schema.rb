@@ -10,10 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_26_201226) do
+ActiveRecord::Schema.define(version: 2021_03_05_070012) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "action_logs", force: :cascade do |t|
+    t.integer "student_id"
+    t.integer "user_id"
+    t.json "student_info", default: {}
+    t.json "user_info", default: {}
+    t.string "action"
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["student_id"], name: "index_action_logs_on_student_id"
+    t.index ["user_id"], name: "index_action_logs_on_user_id"
+  end
 
   create_table "appointments", force: :cascade do |t|
     t.integer "instructor_id"
@@ -35,6 +48,7 @@ ActiveRecord::Schema.define(version: 2021_02_26_201226) do
     t.float "value", default: 0.0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "paid", default: false
     t.index ["student_id"], name: "index_fines_on_student_id"
   end
 

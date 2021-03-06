@@ -17,6 +17,7 @@ class Appointment < ApplicationRecord
   validate :validate_instructor_license_type
   validate :instructor_assigned_hours
   validate :student_assigned_hours
+  validate :student_is_good_standing
 
   def validate_appointment_uniqueness
     appointment_ids = Appointment.where(
@@ -81,6 +82,12 @@ class Appointment < ApplicationRecord
 
     if student_hours + hours > student.available_hours_per_license(license_type)
       errors.add(:student_id, "#{student.full_name} sobrepasa las horas disponibles en la licencia #{license_type}")
+    end
+  end
+
+  def student_is_good_standing
+    if self.student.is_debtor_or_has_fines?
+      errors.add(:student_id, "#{student.full_name} no se encuentra a paz y salvo.")
     end
   end
 
