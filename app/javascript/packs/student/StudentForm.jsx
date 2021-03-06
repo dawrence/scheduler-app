@@ -263,7 +263,8 @@ class StudentForm extends React.Component {
             </div>
           </div>
         }
-        <div className="col-12" style={{overflow: 'auto', height: '300px'}}>
+        <div className="col-12" style={
+            CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? {overflow: 'auto'} : {overflow: 'auto', height: '300px'}}>
           <StudentList
             currentUser={this.state.currentUser}
             items={this.state.students}

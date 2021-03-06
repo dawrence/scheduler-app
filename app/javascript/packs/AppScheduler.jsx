@@ -100,6 +100,14 @@ const Content = withStyles(style, { name: 'Content' })(({
       <Grid item xs={2} className={classes.textCenter}>
         <Room className={classes.icon} />
       </Grid>
+
+      {
+        appointmentData.student.is_debtor_or_has_fines &&
+        <div className='alert alert-danger' role="alert">
+          Estudiante presenta mora o multas
+        </div>
+      }
+
       <Grid item xs={10}>
         <span>Instructor: {appointmentData.instructor.full_name}</span>
       </Grid>
