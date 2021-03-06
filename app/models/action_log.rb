@@ -7,11 +7,11 @@ class ActionLog < ApplicationRecord
   before_save :backup_student_info
 
   def user_text
-    self.user&.email || self.user_info.email || "NoUser"
+    self.user&.email || self.user_info["email"] || "NoUser"
   end
 
   def student_text
-    self.student&.full_name || self.student_info.full_name || "NoStudent"
+    self.student&.full_name || self.student_info["full_name"] || "NoStudent"
   end
 
   def logged_at
@@ -19,7 +19,7 @@ class ActionLog < ApplicationRecord
   end
 
   def to_s
-    "#{self.user_text} #{self.action.downcase} a #{student}; motivo: #{self.content.downcase}"  
+    "#{self.user_text} #{self.action.downcase} a #{self.student_text} a las #{self.logged_at}; motivo: #{self.content.downcase}"  
   end
 
   private
