@@ -27,8 +27,7 @@ import {
   GroupingPanel,
   DragDropProvider,
   DateNavigator,
-  DayView,
-  TodayButton
+  DayView
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -240,8 +239,8 @@ export default class AppScheduler extends React.PureComponent {
   }
 
   onCurrentDateChange(params){
+    this.setState({ currentDate: params });
     if (params.getMonth() !== this.state.currentDate.getMonth()) {
-      this.setState({ currentDate: params });
       this.fetchAppointments(null, null, params);
       this.fetchVehicles();
     }
@@ -309,7 +308,7 @@ export default class AppScheduler extends React.PureComponent {
   }
 
   render() {
-    const { data, currentViewName, visible, appointmentMeta, vehicles } = this.state;
+    const { data, currentViewName, currentDate, visible, appointmentMeta, vehicles } = this.state;
     const resources = [{
       fieldName: 'vehicle_id',
       title: 'Vehicle',
@@ -318,6 +317,19 @@ export default class AppScheduler extends React.PureComponent {
     const grouping = vehicles.length > 0 ? [{
       resourceName: 'vehicle_id',
     }] : [];
+
+    const TimeTableCell = props => (
+      <MonthView.TimeTableCell
+        {...props}
+        onDoubleClick={(() => {
+          this.setState({
+            currentDate: props.startDate ,
+            currentViewName: 'Day'
+          });
+        }).bind(this)}
+      />
+    )
+
     return (
       <>
         <Filter filter={this.handleFilter} filterWithId={this.handleFilterWithId}/>
@@ -332,19 +344,21 @@ export default class AppScheduler extends React.PureComponent {
               height={660}
             >
               <ViewState
-                defaultCurrentDate={this.state.currentDate}
+                currentDate={currentDate}
                 onCurrentDateChange={this.onCurrentDateChange}
                 currentViewName={currentViewName}
               />
               <DayView
                 startDayHour={5}
-                endDayHour={20}
+                endDayHour={23}
               />
               <WeekView
                 startDayHour={5}
-                endDayHour={20}
+                endDayHour={23}
               />
-              <MonthView />
+              <MonthView
+                timeTableCellComponent={TimeTableCell}
+              />
               <Toolbar />
               <DateNavigator />
               <EditingState

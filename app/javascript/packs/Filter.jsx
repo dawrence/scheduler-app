@@ -60,14 +60,12 @@ class Filter extends React.Component {
   fetchStudents(){
     axios.get('/api/v1/students/', {})
       .then(({data}) => {
-        console.log(JSON.stringify(data))
-
         this.setState({ students: data });
       })
       .catch((error) => {
         alert(error.message)
         this.setState({ students: [] });
-      });      
+      });
   }
 
   render(){
