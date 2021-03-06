@@ -10,8 +10,20 @@ const useStyles = makeStyles({
     marginTop: '1rem',
     padding: '0.5rem'
   },
+  actionLogHead: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  actionLogSegment: {
+    display: 'flex',
+    alignItems: 'center',
+  },
   actionLogText:{
     marginRight: '0.2rem'
+  },
+  actionLogDate: {
+    fontSize: '0.75rem'
   }
 });
 
@@ -19,16 +31,30 @@ const ActionLogLine = ({ actionLog }) => {
   const classes = useStyles();
   return(
     <Paper elevation={3} className={classes.actionLogLine}>
-      <Typography className={classes.actionLogText} color="colorPrimary">
-        {actionLog.user.email} 
+      <div className={classes.actionLogHead}>
+        <Typography className={classes.actionLogText} color="colorPrimary">
+          {actionLog.user_text} 
+        </Typography>
+        <Typography className={classes.actionLogDate} color="textSecondary">
+          {actionLog.logged_at} 
+        </Typography>
+      </div>
+      <div className={classes.actionLogSegment}>
         <Typography className={classes.actionLogText} color="error">
           {actionLog.action}
         </Typography>
-        {`a ${actionLog.student.full_name}; motivo: `}
+        <Typography className={classes.actionLogText} color="colorPrimary">
+          {`al estudiante ${actionLog.student_text}`}
+        </Typography>
+      </div>
+      <div className={classes.actionLogSegment}>
+        <Typography className={classes.actionLogText} color="colorPrimary">
+          Justificación:
+        </Typography>
         <Typography className={classes.actionLogText} color="textSecondary">
           {actionLog.content}
         </Typography>
-      </Typography>
+      </div>
     </Paper>
   );
 }

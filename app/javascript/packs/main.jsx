@@ -74,7 +74,7 @@ class Main extends React.Component {
           <Switch>
             {
               CurrentUserHelper.canPerform(this.state.currentUser) &&
-              <Route path={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>
+              <Route exact path={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>
                 <StudentForm />
               </Route>
             }
@@ -97,7 +97,7 @@ class Main extends React.Component {
               </Route>
             }
             {
-              CurrentUserHelper.canPerform(this.state.currentUser) &&
+              CurrentUserHelper.canPerform(this.state.currentUser, "admin", "scheduler") &&
               <Route path="/">
                 <AppScheduler name="AppScheduler" />
               </Route>

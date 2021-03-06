@@ -67,7 +67,7 @@ class InstructorForm extends React.Component {
   handleSubmit(ev) {
     const requestOptions = {
         url: this.state.instructor.id ? `/api/v1/instructors/${this.state.instructor.id}` : '/api/v1/instructors',
-        method: this.state.instructor.id ? 'PATCH' : 'POST',
+        method: this.state.instructor.id ? 'patch' : 'post',
         headers: { 'Content-Type': 'application/json' },
         data: JSON.stringify({ instructor: this.state.instructor })
     };

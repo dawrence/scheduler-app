@@ -6,10 +6,20 @@ class ActionLog < ApplicationRecord
   before_save :backup_user_info
   before_save :backup_student_info
 
+  def user_text
+    self.user&.email || self.user_info.email || "NoUser"
+  end
+
+  def student_text
+    self.student&.full_name || self.student_info.full_name || "NoStudent"
+  end
+
+  def logged_at
+    self.created_at.to_datetime.new_offset("-05:00").strftime('%d/%m/%Y %H:%M:%S%P')
+  end
+
   def to_s
-    user = self.user&.email || self.user_info.email || "NoUser"
-    student = self.student&.full_name || self.student_info.full_name || "NoStudent"
-    "#{user.strip} #{self.action.downcase} a #{student.strip}; motivo: #{self.content.downcase}"  
+    "#{self.user_text} #{self.action.downcase} a #{student}; motivo: #{self.content.downcase}"  
   end
 
   private
