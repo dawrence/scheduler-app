@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_05_070012) do
+ActiveRecord::Schema.define(version: 2021_03_13_110148) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -93,10 +93,12 @@ ActiveRecord::Schema.define(version: 2021_03_05_070012) do
     t.string "plate", null: false
     t.string "status"
     t.integer "available_hours", default: 0
-    t.string "type", default: "car", null: false
+    t.string "type", null: false
     t.json "additional_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "color"
+    t.json "schedule", default: {"1"=>"allDAy", "2"=>"allDAy", "3"=>"allDAy", "4"=>"allDAy", "5"=>"allDAy", "6"=>"allDAy"}
   end
 
 end

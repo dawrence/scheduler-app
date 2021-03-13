@@ -362,7 +362,7 @@ export default class AppScheduler extends React.PureComponent {
       fieldName: 'vehicle_id',
       title: 'Vehicle',
       instances: vehicles?.filter((v) => this.state.currentGroup === 'all' ? true : v.type === this.state.currentGroup)
-                          .map((r, i) => { return {text: `${r.string_type} - ${r.plate}`, id: r.id, color: blue[i*100] }; }) || []
+                          .map((r) => { return {text: `${r.string_type} - ${r.plate}`, id: r.id, color: r.color }; }) || []
     }];
     const grouping = vehicles.length > 0 ? [{
       resourceName: 'vehicle_id',

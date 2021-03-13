@@ -1,8 +1,164 @@
+import 'date-fns';
 import React from 'react'
 import VehicleList from './VehicleList'
 import CurrentUserHelper from '../helpers/CurrentUserHelper';
+import { makeStyles } from '@material-ui/core/styles';
+import { ColorPicker } from 'material-ui-color'; 
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import {format, parse} from 'date-fns';
+import Checkbox from '@material-ui/core/Checkbox';
+import WatchLaterIcon from '@material-ui/icons/WatchLater';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import DateUtils from '@date-io/date-fns'; 
+import Typography from '@material-ui/core/Typography';
+import {
+  MuiPickersUtilsProvider,
+  TimePicker ,
+} from '@material-ui/pickers';
 import axios from 'axios';
 
+const useStyles = makeStyles({
+  root: {
+    '& .sc-iBPRYJ': {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    '& button, & button:hover ': {
+      width: '2rem',
+      minWidth: '2rem',
+      height: '2rem',
+      minHeight: '2rem',
+    },
+    '& input.MuiInputBase-input.MuiInput-input': {
+      margin: 0
+    },
+    '& .MuiInput-underline:before, & .MuiInput-underline:after': {
+      border: 0
+    },
+  },
+  dayTimer: {
+    padding: '0.5rem',
+    '& .day-name ': {
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: '0 0.75rem',
+      borderBottom: '1px solid #9e9e9e'
+    },
+    '& .time-inputs ': {
+      display: 'flex',
+      justifyContent: 'space-between',
+      '& > *': {
+        margin: '0 0.75rem',
+        '& input': {
+          borderBottom: 'none',
+          margin: 0
+        }
+      }
+    }
+  },
+  allDayText: {
+    padding: '0.75rem'
+  }
+});
+
+const ColorPickerInput = ({value, onChange}) =>{
+  const useInnerStyles = makeStyles({
+    root: {
+      '& button, & button:hover ': {
+        backgroundColor: value,
+      },
+    },
+  });
+  const variableClasses = useInnerStyles();
+  const classes = useStyles();
+  return(
+    <div className={[variableClasses.root, classes.root].join(' ')}>
+      <ColorPicker
+        value = { value }
+        onChange = { onChange }
+      />
+    </div>
+  );
+}
+
+const DayTimePicker = ({ schedule, dayNumber, dayName, onSelect}) => {
+  if (typeof schedule !== "string") console.log(parse(schedule.from, "hh:mm aaa", new Date()))
+  if (typeof schedule !== "string") console.log(parse(schedule.to, "hh:mm aaa", new Date()))
+  const classes = useStyles();
+  const [fromTime, setFromTime] = React.useState(
+    typeof schedule === 'string' ? new Date() : parse(schedule.from, "hh:mm aaa", new Date())
+  );
+  const [toTime, setToTime] = React.useState(
+    typeof schedule === 'string' ? new Date() : parse(schedule.to, "hh:mm aaa", new Date())
+  );
+  const [rangeType, changeRangeType] = React.useState(typeof schedule !== 'string');
+  React.useEffect(() => {
+    const period = {
+      from: format(fromTime, "hh:mm aaa"), 
+      to: format(toTime, "hh:mm aaa"), 
+    }
+    onSelect(dayNumber, rangeType ? period : "allDay");
+  }, [rangeType, toTime, fromTime])
+  return(
+    <div className={classes.dayTimer}>
+      <div className="day-name">
+        <Typography variant="h6">{dayName}</Typography>
+        <FormControlLabel
+          control={
+            <Checkbox 
+              icon={<AccessTimeIcon />} 
+              checkedIcon={<WatchLaterIcon />} 
+              name="chRT"
+              color="primary"
+              checked={rangeType}
+              onChange={({ target }) => changeRangeType(target.checked)}
+            />
+          }
+          label="Periodo"
+        />
+      </div>
+      <div className="time-inputs">
+        {
+          rangeType
+          ?
+            <React.Fragment>
+              <TimePicker
+                value={fromTime}
+                onChange={setFromTime}
+              />
+              <TimePicker
+                value={toTime}
+                onChange={setToTime}
+              />
+            </React.Fragment>
+          : 
+            <div className={classes.allDayText}>
+              <Typography color={'primary'}>Disponible todo el dia</Typography>
+            </div>
+        }        
+      </div>
+    </div>
+  )
+}
+
+const DaysList = ({schedule, onSelect}) => {
+  const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"]
+  return (
+    <MuiPickersUtilsProvider utils={DateUtils}>
+      {
+        days.map((dayName, index) => (
+          <DayTimePicker 
+            key={index}
+            schedule={schedule[index+1]}
+            dayNumber={index+1} 
+            dayName={dayName} 
+            onSelect={onSelect} 
+          />
+        ))
+      }
+    </MuiPickersUtilsProvider>
+  );
+ }
 class VehicleForm extends React.Component {
   constructor(props) {
     super(props);
@@ -12,13 +168,19 @@ class VehicleForm extends React.Component {
         plate: '',
         status: 'available',
         type: 'Car',
-        available_hours: 16
+        available_hours: 16,
+        color: '#7edbc1',
+        schedule: {
+          1: "allDAy", 2: "allDAy", 3: "allDAy",4: "allDAy",5: "allDAy",6: "allDAy"
+        }
       },
       error: null,
       vehicles: [],
       loaded: false
     };
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangeColor = this.handleChangeColor.bind(this);
+    this.handleScheduleSelection = this.handleScheduleSelection.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchItems = this.fetchItems.bind(this);
     this.fetchCurrentUser = this.fetchCurrentUser.bind(this);
@@ -65,7 +227,11 @@ class VehicleForm extends React.Component {
         plate: '',
         status: 'available',
         type: 'Car',
-        available_hours: 16
+        available_hours: 16,
+        color: '#7edbc1',
+        schedule: {
+          1: "allDAy", 2: "allDAy", 3: "allDAy",4: "allDAy",5: "allDAy",6: "allDAy"
+        }
       },
     });
     this.forceUpdate();
@@ -94,6 +260,30 @@ class VehicleForm extends React.Component {
     this.setState({ vehicle: vehicleParams })
   }
 
+  handleChangeColor(color){
+    color = color === "" 
+            ? '#' 
+            : color?.hex
+            ? `#${color.hex}`
+            : color;
+    this.setState((oldState) => ({
+        vehicle: {...oldState.vehicle, color}
+      })
+    );
+  }
+
+  handleScheduleSelection(day, schedule){
+    this.setState((oldState) => ({
+      vehicle: { 
+        ...oldState.vehicle, 
+        schedule: { 
+          ...oldState.vehicle.schedule, 
+          [day]: schedule
+        } 
+      }
+    }));
+  }
+
   render() {
     return (
       <>
@@ -111,7 +301,7 @@ class VehicleForm extends React.Component {
                     </div>
                     <div className="container">
                       <div className="row">
-                        <div className="col m12 offset-m2">
+                        <div className="col m12 offset-m1">
                           <div className="form-group">
                             <label htmlFor="plate">Placa</label>
                             <input type='text'
@@ -149,6 +339,11 @@ class VehicleForm extends React.Component {
                                   value={ this.state.vehicle.available_hours }
                                   className='validate form-control'
                                   placeholder="Horas disponibles" />
+                            <ColorPickerInput
+                              disablePlainColor
+                              value = {this.state.vehicle.color}
+                              onChange = {this.handleChangeColor}
+                            />
                           </div>
                           <div className='form-group'>
                             <button type="submit" className="waves-effect waves-light btn">Guardar</button>
@@ -156,6 +351,12 @@ class VehicleForm extends React.Component {
                           <div className='form-group'>
                             <button className="waves-effect waves-light btn" onClick={this.newRecord}>Nuevo</button>
                           </div>
+                        </div>
+                        <div className="col m12 offset-m1">
+                          <DaysList 
+                            schedule={this.state.vehicle.schedule} 
+                            onSelect={this.handleScheduleSelection}
+                          />
                         </div>
                       </div>
                     </div>
