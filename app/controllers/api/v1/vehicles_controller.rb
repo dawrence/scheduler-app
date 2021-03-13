@@ -43,7 +43,8 @@ module Api
       private
 
         def safe_params
-          params.require(:vehicle).permit(:type, :plate, :available_hours, :status)
+          puts params
+          params.require(:vehicle).permit(:type, :plate, :available_hours, :status, :color, schedule: {})
         end
 
         def model
