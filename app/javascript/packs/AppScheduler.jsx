@@ -14,6 +14,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import classNames from 'clsx';
 import { blue } from '@material-ui/core/colors';
 import Filter from './Filter'
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { styled } from '@material-ui/core/styles';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { ViewState, EditingState, IntegratedGrouping, GroupingState, IntegratedEditing} from '@devexpress/dx-react-scheduler';
 import {
   Scheduler,
@@ -171,8 +176,10 @@ export default class AppScheduler extends React.PureComponent {
     this.state = {
       currentDate: new Date(),
       visible: false,
+      loading: true,
       filterType: null,
       filterValue: null,
+      currentGroup: 'all',
       data: [],
       vehicles: [],
       currentViewName: 'Month',
@@ -193,10 +200,13 @@ export default class AppScheduler extends React.PureComponent {
     this.handleFilter = this.handleFilter.bind(this);
     this.handleFilterWithId = this.handleFilterWithId.bind(this);
     this.onCurrentDateChange = this.onCurrentDateChange.bind(this);
+    this.handleError = this.handleError.bind(this);
+    this.handleGroupChange = this.handleGroupChange.bind(this);
   }
 
   handleError(res) {
     const data = res.response.data;
+    this.setState({ loading: false })
     alert(data.error)
   }
 
@@ -239,11 +249,15 @@ export default class AppScheduler extends React.PureComponent {
       headers: { 'Content-Type': 'application/json' },
       body: ''
     };
+    this.setState({ loading: true })
     return axios.delete(`/api/v1/appointments/${params}`, {})
+          .then(() => this.setState({ loading: false }))
   }
 
   saveAppointment(params) {
+    this.setState({ loading: true })
     return axios.post('/api/v1/appointments', params)
+                .then(() => this.setState({ loading: false }))
   }
 
   onCurrentDateChange(params){
@@ -256,7 +270,9 @@ export default class AppScheduler extends React.PureComponent {
 
   updateAppointment(params) {
     const appt_id = Object.keys(params)[0]
+    this.setState({ loading: true })
     return axios.patch(`/api/v1/appointments/${appt_id}`, params[appt_id])
+                .then(() => this.setState({ loading: false }))
   }
 
   fetchAppointments(filterValue = null, filterType = null, currentDate=this.state.currentDate){
@@ -267,15 +283,18 @@ export default class AppScheduler extends React.PureComponent {
     if(filterType && filterValue) {
       url = url+`&filter_type=${filterType}&filter_value=${filterValue}`
     }
+    this.setState({ loading: true })
     return axios.get(url)
       .then((result) => {
           this.setState({
-            data: result.data
+            data: result.data,
+            loading: false
           })
         })
       .catch((error) => {
           this.setState({
-            error: error
+            error: error,
+            loading: false
           })
         }
       )
@@ -315,12 +334,35 @@ export default class AppScheduler extends React.PureComponent {
     );
   }
 
+  useStyles() {
+    return makeStyles((theme) => ({
+      backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+      },
+    }))
+  }
+
+  handleGroupChange(event, newGroup) {
+    if(newGroup) {
+      this.setState({ currentGroup: newGroup })
+    }
+    else{
+      this.setState({ currentGroup: 'all' })
+    }
+  }
+
   render() {
-    const { data, currentViewName, currentDate, visible, appointmentMeta, vehicles } = this.state;
+    const { data, currentViewName, currentDate, visible, appointmentMeta, vehicles, loading } = this.state;
+    const BackdropStyled = styled(Backdrop)({
+      zIndex: 9999,
+      color: '#fff',
+    });
     const resources = [{
       fieldName: 'vehicle_id',
       title: 'Vehicle',
-      instances: vehicles?.map((r, i) => { return {text: `${r.string_type} - ${r.plate}`, id: r.id, color: blue[i*100] }; }) || []
+      instances: vehicles?.filter((v) => this.state.currentGroup === 'all' ? true : v.type === this.state.currentGroup)
+                          .map((r, i) => { return {text: `${r.string_type} - ${r.plate}`, id: r.id, color: blue[i*100] }; }) || []
     }];
     const grouping = vehicles.length > 0 ? [{
       resourceName: 'vehicle_id',
@@ -337,10 +379,25 @@ export default class AppScheduler extends React.PureComponent {
         }).bind(this)}
       />
     )
-
     return (
       <>
+        <BackdropStyled open={loading}>
+          <CircularProgress color="inherit" />
+        </BackdropStyled>
         <Filter filter={this.handleFilter} filterWithId={this.handleFilterWithId}/>
+        <ToggleButtonGroup
+          value={this.state.currentGroup}
+          exclusive
+          onChange={this.handleGroupChange}
+          aria-label="text alignment"
+        >
+          <ToggleButton value="Car" aria-label="left aligned">
+            Carro
+          </ToggleButton>
+          <ToggleButton value="Motorcycle" aria-label="left aligned">
+            Moto
+          </ToggleButton>
+        </ToggleButtonGroup>
         <React.Fragment>
           <ExternalViewSwitcher
             currentViewName={currentViewName}

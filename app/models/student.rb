@@ -16,6 +16,10 @@ class Student < ApplicationRecord
   validates :license_type, inclusion: { in: %w[a2 b1 c1 a2b1 a2c1] }
   validates_uniqueness_of :id_number
 
+  scope :by_car, -> { where("students.license_type ILIKE '%#{Student::LICENSE_B1}%' OR students.license_type ILIKE '%#{Student::LICENSE_C1}%'") }
+
+  scope :by_motorcycle, -> { where("students.license_type ILIKE '%#{Student::LICENSE_A2}%'") }
+
   AVAILABLE_HOURS = {
     a2: 16,
     b1: 21,
@@ -47,7 +51,7 @@ class Student < ApplicationRecord
   end
 
   def is_debtor_or_has_fines
-    self.total_fines > 0 || self.debtor?    
+    self.total_fines > 0 || self.debtor?
   end
   alias :is_debtor_or_has_fines? :is_debtor_or_has_fines
 

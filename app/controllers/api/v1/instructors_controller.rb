@@ -9,6 +9,7 @@ module Api
       def index
         if can_perform(:admin, :treasurer)
           @instructors = Instructor.all.order(created_at: :desc)
+
           render json: @instructors
         else
           render json: Instructor.none
@@ -37,17 +38,17 @@ module Api
 
       private
 
-        def safe_params
-          params.require(:instructor)
-                .permit(:full_name, :email,
-                        :phone, :available_hours,
-                        :license_type,
-                        :id_number)
-        end
+      def safe_params
+        params.require(:instructor)
+              .permit(:full_name, :email,
+                      :phone, :available_hours,
+                      :license_type,
+                      :id_number)
+      end
 
-        def model
-          Instructor
-        end
+      def model
+        Instructor
+      end
     end
   end
 end

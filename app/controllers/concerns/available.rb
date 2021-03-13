@@ -9,8 +9,21 @@ module Available
     start_time = Time.iso8601(CGI.unescape(params[:start_at])).change(sec: 0)
     end_time = Time.iso8601(CGI.unescape(params[:end_at])).change(sec: 0)
 
-    model.without_appointments(start_time, end_time)
-         .order(created_at: :desc)
+    (vehicle.present? ? model_by_vehicle : model)
+      .without_appointments(start_time, end_time)
+      .order(created_at: :desc)
+  end
+
+  def vehicle
+    @vehicle ||= Vehicle.find_by(id: params[:vehicle_id])
+  end
+
+  def model_by_vehicle
+    if vehicle.is_a?(Motorcycle)
+      model.by_motorcycle
+    else
+      model.by_car
+    end
   end
 
   def model; end
