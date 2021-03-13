@@ -10,6 +10,12 @@ class Instructor < ApplicationRecord
   has_many :appointments
   validates_uniqueness_of :id_number
 
+  scope :by_license_type, ->(type) { where('license_type ILIKE ?', "%#{type}%") }
+
+  scope :by_car, -> { where("instructors.license_type ILIKE '%#{Student::LICENSE_B1}%' OR instructors.license_type ILIKE '%#{Student::LICENSE_C1}%'") }
+
+  scope :by_motorcycle, -> { where("instructors.license_type ILIKE '%#{Student::LICENSE_A2}%'") }
+
   def assigned_hours_per_day(date)
     assigned_hours(date.beginning_of_day, date.end_of_day)
   end

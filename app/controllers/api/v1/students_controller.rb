@@ -9,6 +9,7 @@ module Api
       def index
         if can_perform
           @students = Student.all.order(created_at: :desc)
+
           render json: @students
         else
           render json: Student.none
@@ -67,17 +68,17 @@ module Api
         render json: student
       end
 
-
       private
-        def safe_params
-          params.require(:student)
-                .permit(:full_name, :email, :phone,
-                        :license_type, :age, :id_number)
-        end
 
-        def model
-          Student
-        end
+      def safe_params
+        params.require(:student)
+              .permit(:full_name, :email, :phone,
+                      :license_type, :age, :id_number)
+      end
+
+      def model
+        Student
+      end
     end
   end
 end

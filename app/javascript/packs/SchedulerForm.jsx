@@ -9,6 +9,7 @@ import {
 } from '@devexpress/dx-react-scheduler-material-ui';
 
 const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
+  const [vehicleId, setVehicleId] = useState(appointmentData.vehicle_id)
   const [vehicles, setVehicles] = useState([])
   const [instructors, setInstructors] = useState([])
   const [students, setStudents] = useState([])
@@ -29,8 +30,8 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
         }
       )
   }
-  const fetchInstructors=() => {
-    fetch(`/api/v1/instructors/available?start_at=${encodeURIComponent(start_date)}&end_at=${encodeURIComponent(end_date)}`)
+  const fetchInstructors=(vehicleId = null) => {
+    fetch(`/api/v1/instructors/available?start_at=${encodeURIComponent(start_date)}&end_at=${encodeURIComponent(end_date)}&vehicle_id=${vehicleId}`)
       .then(res => res.json())
       .then(
         (result) => {
@@ -43,8 +44,8 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
         }
       )
   }
-  const fetchStudents=() => {
-    fetch(`/api/v1/students/available?start_at=${encodeURIComponent(start_date)}&end_at=${encodeURIComponent(end_date)}`)
+  const fetchStudents=(vehicleId = null) => {
+    fetch(`/api/v1/students/available?start_at=${encodeURIComponent(start_date)}&end_at=${encodeURIComponent(end_date)}&vehicle_id=${vehicleId}`)
       .then(res => res.json())
       .then(
         (result) => {
@@ -60,8 +61,8 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
 
   useEffect(()=>{
     fetchVehicles();
-    fetchStudents();
-    fetchInstructors();
+    fetchStudents(vehicleId);
+    fetchInstructors(vehicleId);
   }, []);
 
   const onVehicleIdChange = (nextValue) => {
@@ -93,7 +94,15 @@ const SchedulerForm = ({ onFieldChange, appointmentData, ...restProps }) => {
   return (
     <AppointmentForm.BasicLayout
       appointmentData={appointmentData}
-      onFieldChange={onFieldChange}
+      onFieldChange={(evt) => {
+        console.log(evt)
+        if(evt.vehicle_id){
+          setVehicleId(evt.vehicle_id)
+          fetchStudents(evt.vehicle_id);
+          fetchInstructors(evt.vehicle_id);
+        }
+        onFieldChange(evt)
+      }}
       {...restProps}
     >
       <div>
