@@ -1,45 +1,28 @@
 <div class='container' style='padding-top: 2rem'>
   <h3>Horario</h3>
   <% @students.each do |s| %>
-    <h4>Estudiante</h4>
     <div class='row'>
-      <div class='container'>
-        <div class='row'>
-          <div class="col-3"><strong>Nombre:</strong></div>
-          <div class="col-9"><span><%= s.full_name %></span></div>
-        </div>
-        <div class='row'>
-          <div class="col-3"><strong>Categoria:</strong></div>
-          <div class="col-9"><span><%= s.license_type %></span></div>
-        </div>
-        <div class='row'>
-          <div class="col-3"><strong>Cantidad de Horas Agendadas:</strong></div>
-          <div class="col-9"><span><%= s.assigned_hours %></span></div>
-        </div>
-      </div>
-      <div class='row'>
-        <h5>Practicas</h5>
-        <table class="table">
-          <thead>
+      <div class="col-12"><h5>Estudiante: <%= s.full_name %></h5></div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Dia</th>
+            <th scope="col">Hora</th>
+            <th scope="col">Instructor</th>
+            <th scope="col">Vehiculo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% s.appointments.where(start_at: @start_at..@end_at).each_with_index do |app, i| %>
             <tr>
-              <th scope="col">Dia</th>
-              <th scope="col">Hora</th>
-              <th scope="col">Instructor</th>
-              <th scope="col">Vehiculo</th>
+              <th scope="row"><%=I18n.l(app.start_at, format: '%A, %b %e')%></th>
+              <td><%= app.display_hour %></td>
+              <td><%= app.instructor.full_name %></td>
+              <td><%= app.vehicle.plate %></td>
             </tr>
-          </thead>
-          <tbody>
-            <% s.appointments.where(start_at: @start_at..@end_at).each_with_index do |app, i| %>
-              <tr>
-                <th scope="row"><%=I18n.l(app.start_at, format: '%A, %b %e')%></th>
-                <td><%= app.display_hour %></td>
-                <td><%= app.instructor.full_name %></td>
-                <td><%= app.vehicle.plate %></td>
-              </tr>
-            <%end%>
-          </tbody>
-        </table>
-      </div>
+          <%end%>
+        </tbody>
+      </table>
     </div>
   <% end %>
   <div class='row'>
