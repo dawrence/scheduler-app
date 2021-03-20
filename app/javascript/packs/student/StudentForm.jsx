@@ -2,7 +2,16 @@ import React from 'react'
 import StudentList from './StudentList'
 import TextAreaDialog from '../dialogs/TextAreaDialog';
 import CurrentUserHelper from '../helpers/CurrentUserHelper';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { styled } from '@material-ui/core/styles';
 import axios from 'axios';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import formatRelativeWithOptions from 'date-fns/esm/fp/formatRelativeWithOptions/index';
 
 
 class StudentForm extends React.Component {
@@ -22,8 +31,11 @@ class StudentForm extends React.Component {
         license_type: '',
         available_hours: 0
       },
+      reportStartDate: null,
+      reportEndDate: null,
       error: null,
       students: [],
+      loading: true,
       loaded: false,
       openDialog: false,
       justification: "",
@@ -43,6 +55,9 @@ class StudentForm extends React.Component {
     this.closeDialog = this.closeDialog.bind(this);
     this.onChangeJustification = this.onChangeJustification.bind(this);
     this.resetDialogJustification = this.resetDialogJustification.bind(this);
+    this.setReportStartDate = this.setReportStartDate.bind(this);
+    this.setReportEndDate = this.setReportEndDate.bind(this);
+    this.reportAppointments = this.reportAppointments.bind(this);
     this.onAccept = () => {};
   }
 
@@ -75,50 +90,77 @@ class StudentForm extends React.Component {
   }
 
   fetchCurrentUser() {
+    this.setState({ loading: true })
     axios.get("/api/v1/active_user", {})
       .then(({data}) => {
         this.setState({
+          loading: false,
           currentUser: data,
         })
       })
-      .catch((error) => alert(error));
+      .catch((error) => {
+        this.setState({ loading: false })
+        alert(error)
+      } );
   }
 
   markStudent(e, id) {
+    this.setState({ loading: true })
     return axios.post(`/api/v1/students/${id}/debtor/mark`, { content: this.state.justification }).then(() => {
+      this.setState({ loading: false })
       this.resetDialogJustification();
       this.fetchItems();
       this.forceUpdate();
-    }).catch((error) => alert(error));
+    }).catch((error) => {
+      this.setState({ loading: false })
+      alert(error)
+    });
   }
 
   unmarkStudent(e, id) {
+    this.setState({ loading: true })
     return axios.post(`/api/v1/students/${id}/debtor/unmark`, { content: this.state.justification }).then(() => {
+      this.setState({ loading: false })
       this.resetDialogJustification();
       this.fetchItems();
       this.forceUpdate();
-    }).catch((error) => alert(error));
+    }).catch((error) => {
+      this.setState({ loading: false })
+      alert(error)
+    });
   }
 
   setFineStudent(e, id) {
+    this.setState({ loading: true })
     return axios.post(`/api/v1/students/${id}/fine/set`, { content: this.state.justification }).then(() => {
+      this.setState({ loading: false })
       this.resetDialogJustification();
       this.fetchItems();
       this.forceUpdate();
-    }).catch((error) => alert(error));
+    }).catch((error) => {
+      this.setState({ loading: false })
+      alert(error)
+    });
   }
 
   payFineStudent(e, id) {
+    this.setState({ loading: true })
     return axios.post(`/api/v1/students/${id}/fine/pay`, { content: this.state.justification }).then(() => {
+      this.setState({ loading: false })
       this.resetDialogJustification();
       this.fetchItems();
       this.forceUpdate();
-    }).catch((error) => alert(error));
+    }).catch((error) => {
+      this.setState({ loading: false })
+      alert(error)
+    });
   }
 
   deleteStudent(e, id) {
     if( confirm('Desea borrar el Estudiante seleccionado?')){
+      this.setState({ loading: true })
       return axios.delete(`/api/v1/students/${id}`, {}).then(() => {
+        this.setState({ loading: false })
         this.fetchItems();
         this.forceUpdate();
       })
@@ -132,13 +174,17 @@ class StudentForm extends React.Component {
         headers: { 'Content-Type': 'application/json' },
         data: JSON.stringify({ student: this.state.student })
     };
+    this.setState({ loading: true})
     axios(requestOptions)
       .then(({ data }) => {
-        this.setState({ student: data })
+        this.setState({ loading: false, student: data })
         this.fetchItems();
         this.forceUpdate();
       })
-      .catch((error) => alert(error));
+      .catch((error) => {
+        this.setState({ loading: false })
+        alert(error)
+      });
     ev.preventDefault();
     this.forceUpdate();
   }
@@ -153,14 +199,19 @@ class StudentForm extends React.Component {
   }
 
   fetchItems(){
+    this.setState({ loading: true })
     axios.get("/api/v1/students", {})
       .then(({data}) => {
         this.setState({
           students: data,
-          loaded: true
+          loaded: true,
+          loading: false
         })
       })
-      .catch((error) => alert(error));
+      .catch((error) => {
+        this.setState({ loading: false })
+        alert(error)
+      });
   }
 
   handleChange(evt) {
@@ -174,9 +225,28 @@ class StudentForm extends React.Component {
     this.setState({ student: studentParams })
   }
 
+  setReportStartDate(date) {
+    this.setState({ reportStartDate: date.toISOString() })
+  }
+
+  reportAppointments(){
+    window.open(`schedule?start_date=${this.state.reportStartDate}&end_date=${this.state.reportEndDate}`, "_blank")
+  }
+
+  setReportEndDate(date) {
+    this.setState({ reportEndDate: date.toISOString() })
+  }
+
   render() {
+    const BackdropStyled = styled(Backdrop)({
+      zIndex: 9999,
+      color: '#fff',
+    });
     return (
       <>
+        <BackdropStyled open={this.state.loading}>
+          <CircularProgress color="inherit" />
+        </BackdropStyled>
         {
           CurrentUserHelper.canPerform(this.state.currentUser) &&
           <div className="row">
@@ -235,6 +305,7 @@ class StudentForm extends React.Component {
 
                             <label htmlFor="licenseType">Tipo de licencia</label>
                             <select name="license_type" className="form-control" id="licenseType" onChange={this.handleChange}>
+                              <option disable='true' value='-1'> -- Licencia --</option>
                               <option selected={this.state.student.license_type === 'a2'} value="a2">A2: Moto</option>
                               <option selected={this.state.student.license_type === 'b1'} value="b1">B1: Vehiculo Particular</option>
                               <option selected={this.state.student.license_type === 'c1'} value="c1">C1: Vehiculo Publico</option>
@@ -263,6 +334,40 @@ class StudentForm extends React.Component {
             </div>
           </div>
         }
+        <div className="col-12" style={{overflow: 'auto'}}>
+          <h4>Reporte de horarios</h4>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-start"
+              label="Fecha Inicial"
+              value={this.state.reportStartDate}
+              onChange={this.setReportStartDate}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+            <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-end"
+              label="Fecha Final"
+              value={this.state.reportEndDate}
+              onChange={this.setReportEndDate}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+          </MuiPickersUtilsProvider>
+          <div className='form-group'>
+            <button className="waves-effect waves-light btn" onClick={this.reportAppointments}>Reporte</button>
+          </div>
+        </div>
         <div className="col-12" style={{overflow: 'auto', height: '300px'}}>
           <StudentList
             currentUser={this.state.currentUser}

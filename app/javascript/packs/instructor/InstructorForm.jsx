@@ -162,6 +162,8 @@ class InstructorForm extends React.Component {
 
                             <label htmlFor="licenseType">Tipo de licencia</label>
                             <select name="license_type" className="form-control" id="licenseType" onChange={this.handleChange}>
+                              <option disable='true' value='-1'> -- Licencia --</option>
+                              <option selected={this.state.instructor.license_type === 'a2'} value="a2">A2: Moto</option>
                               <option selected={this.state.instructor.license_type === 'a2'} value="a2">A2: Moto</option>
                               <option selected={this.state.instructor.license_type === 'b1'} value="b1">B1: Vehiculo Particular</option>
                               <option selected={this.state.instructor.license_type === 'c1'} value="c1">C1: Vehiculo Publico</option>

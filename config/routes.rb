@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   end
 
   resources :students, only: %i[show]
+  get 'schedule', to: 'students#index'
 
   root to: 'appointments#index'
 

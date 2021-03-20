@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import DeleteIcon from '@material-ui/icons/Delete';
 import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import { Typography } from '@material-ui/core';
@@ -62,9 +63,9 @@ function StudentList({currentUser, ...props}) {
         <tbody>
         { items.length > 0 && items.map(item => {
               return (
-                <tr 
-                  key={`student-${item.id}`} 
-                  className={item.is_debtor_or_has_fines ? classes.restrictedStudent : {}} 
+                <tr
+                  key={`student-${item.id}`}
+                  className={item.is_debtor_or_has_fines ? classes.restrictedStudent : {}}
                   onClick={(e) => selectStudent(item)}
                 >
                   <td>
@@ -103,8 +104,8 @@ function StudentList({currentUser, ...props}) {
                     CurrentUserHelper.canPerform(currentUser) &&
                     <td>
                       {
-                        item.assigned_hours === 0 && 
-                        <DeleteIcon onClick={(ev) => deleteStudent(ev, item.id)}/> 
+                        item.assigned_hours === 0 &&
+                        <DeleteIcon onClick={(ev) => deleteStudent(ev, item.id)}/>
                       }
                       {
                         CurrentUserHelper.canPerform(currentUser, "admin", "treasurer") &&

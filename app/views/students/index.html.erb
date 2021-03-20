@@ -1,0 +1,48 @@
+<div class='container' style='padding-top: 2rem'>
+  <h3>Horario</h3>
+  <% @students.each do |s| %>
+    <div class='row'>
+      <div class='container'>
+        <div class='row'>
+          <div class="col-3"><strong>Nombre:</strong></div>
+          <div class="col-9"><span><%= s.full_name %></span></div>
+        </div>
+        <div class='row'>
+          <div class="col-3"><strong>Categoria:</strong></div>
+          <div class="col-9"><span><%= s.license_type %></span></div>
+        </div>
+        <div class='row'>
+          <div class="col-3"><strong>Cantidad de Horas Agendadas:</strong></div>
+          <div class="col-9"><span><%= s.assigned_hours %></span></div>
+        </div>
+      </div>
+      <div class='row'>
+        <h4>Practicas</h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Dia</th>
+              <th scope="col">Hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% s.appointments.each_with_index do |app, i| %>
+              <tr>
+                <th scope="row"><%=I18n.l(app.start_at, format: '%A, %b %e')%></th>
+                <td><%= app.display_hour %></td>
+              </tr>
+            <%end%>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+  <div class='row'>
+    <p>* Las cancelaciones de clases practicas se deben realizar con 24 horas de anticipación.</p>
+    <p>* Recuerde  nuestro horario de atención: lunes a viernes de 7am a 5pm y sábados de 8am a 11am.
+         Fuera  de este horario no se atenderan cambios de clases, cancelaciones o programaciones ya realizadas</p>
+    <p>* La no asistencia a las clases teóricas y/o prácticas sin previo aviso incurrirá en una sanción de $15.000 Pesos Colombianos.</p>
+    <p>* Horarios sujetos a cambios inesperados dado a decretos departamentales.</p>
+    <p>* Recuerde que para iniciar su proceso práctico debe encontrarse a paz y salvo </p>
+  </div>
+</div>
