@@ -23,13 +23,15 @@
         <tr>
           <th scope="col">Dia</th>
           <th scope="col">Hora</th>
+          <th scope="col">Licencia</th>
         </tr>
       </thead>
       <tbody>
         <% @appointments.each_with_index do |app, i| %>
           <tr>
-            <th scope="row"><%=I18n.l(app.start_at, format: '%A, %b %e')%></th>
+            <th scope="row"><%=I18n.l(app.start_at.in_time_zone(zone), format: '%A, %b %e')%></th>
             <td><%= app.display_hour %></td>
+            <td><%= app.license_type %></td>
           </tr>
         <%end%>
       </tbody>

@@ -5,7 +5,7 @@ class StudentsController < ApplicationController
 
   layout 'print'
 
-  helper_method :current_date
+  helper_method :current_date, :zone
 
   def index
     I18n.locale = :es
@@ -21,7 +21,11 @@ class StudentsController < ApplicationController
   def show
     I18n.locale = :es
     @student = Student.find_by(id: params[:id])
-    @appointments = @student.appointments
+    @appointments = @student.appointments.order(start_at: :asc)
+  end
+
+  def zone
+    ActiveSupport::TimeZone.new('Bogota')
   end
 
   def current_date
