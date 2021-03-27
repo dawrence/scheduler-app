@@ -120,7 +120,6 @@ class StudentForm extends React.Component {
       })
       .catch((error) => {
         this.setState({ loading: false })
-        alert(error)
       });
   }
 
