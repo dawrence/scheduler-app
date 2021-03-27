@@ -1,4 +1,6 @@
 class Appointment < ApplicationRecord
+  include ActiveModel::Dirty
+
   CLASS_PRACTICE_TYPE = 'practice'.freeze
   CLASS_TEST_TYPE = 'test'.freeze
   CLASS_TYPES = [CLASS_PRACTICE_TYPE, CLASS_TEST_TYPE].freeze
@@ -49,6 +51,12 @@ class Appointment < ApplicationRecord
     ((end_at - start_at) / 1.hour).round
   end
 
+  def hours_was
+    return 0 if end_at_was.blank? || start_at_was.blank?
+
+    ((end_at_was - start_at_was) / 1.hour).round
+  end
+
   def validate_student_license_type
     return if student.license_type.include?(license_type)
 
@@ -62,14 +70,14 @@ class Appointment < ApplicationRecord
   end
 
   def instructor_assigned_hours
-    if instructor.assigned_hours_per_day(start_at) + hours > Instructor::MAX_HOURS_PER_DAY
+    if instructor.assigned_hours_per_day(start_at) + (hours - hours_was) > Instructor::MAX_HOURS_PER_DAY
       errors.add(
         :instructor_id,
         "#{instructor.full_name} sobrepasa el maximo de horas diarias"
       )
     end
 
-    if instructor.assigned_hours_per_month(start_at) + hours > Instructor::MAX_HOURS_PER_MONTH
+    if instructor.assigned_hours_per_month(start_at) + (hours - hours_was) > Instructor::MAX_HOURS_PER_MONTH
       errors.add(
         :instructor_id,
         "#{instructor.full_name} sobrepasa el maximo de horas mensuales"
@@ -80,7 +88,7 @@ class Appointment < ApplicationRecord
   def student_assigned_hours
     student_hours = student.assigned_hours_per_license(license_type)
 
-    if student_hours + hours > student.available_hours_per_license(license_type)
+    if student_hours + (hours - hours_was) > student.available_hours_per_license(license_type)
       errors.add(:student_id, "#{student.full_name} sobrepasa las horas disponibles en la licencia #{license_type}")
     end
   end
