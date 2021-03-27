@@ -19,7 +19,9 @@ Rails.application.routes.draw do
     namespace :v1 do
       get :active_user, to: 'users#active_user'
       resources :action_logs, only: %i[index]
-      resources :appointments, only: %i[index create destroy update]
+      resources :appointments, only: %i[index create destroy update] do
+        get :debtor_student_starts_in_few_days, on: :collection, path: 'with/debtor/student'
+      end
       resources :vehicles, only: %i[index create update]
       namespace :vehicles do
         get 'available'
@@ -33,6 +35,9 @@ Rails.application.routes.draw do
         post :unmark_as_debtor, on: :member, path: 'debtor/unmark'
         post :set_fine, on: :member, path: 'fine/set'
         post :pay_fine, on: :member, path: 'fine/pay'
+        post :change_status, on: :member, path: 'status/next'
+        delete :delete_appointments, on: :member, path: 'appointments/delete'
+        get :status_count, on: :collection, path: 'status/count'
       end
       namespace :students do
         get 'available'

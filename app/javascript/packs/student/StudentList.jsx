@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import DeleteIcon from '@material-ui/icons/Delete';
 import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
-import AssignmentIcon from '@material-ui/icons/Assignment';
+import BeenhereOutlinedIcon from '@material-ui/icons/BeenhereOutlined';
+import AssignmentIndRoundedIcon from '@material-ui/icons/AssignmentIndRounded';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import { Typography } from '@material-ui/core';
@@ -23,7 +24,7 @@ function StudentList({currentUser, ...props}) {
   const selectStudent = props.selectItem;
   const deleteStudent = props.deleteItem
   const isLoaded = props.itemsLoaded;
-  const { markAsDebtor, unmarkAsDebtor, payFine, setFine } = props;
+  const { markAsDebtor, unmarkAsDebtor, payFine, setFine, changeStatus } = props;
   const [error, setError] = useState(props.error);
   const [stats, setStats] = useState(null);
   const [statsToggle, setStatsToggle] = useState(null);
@@ -52,6 +53,7 @@ function StudentList({currentUser, ...props}) {
             <th scope="col">Multas Valor</th>
             <th scope="col">Telefono</th>
             <th scope="col">Licencia</th>
+            <th scope="col">Estado</th>
             <th scope="col">Horas disponibles</th>
             <th scope="col">Horas Asignadas</th>
             {
@@ -95,6 +97,9 @@ function StudentList({currentUser, ...props}) {
                     <span>{item.license_type}</span>
                   </td>
                   <td>
+                    <span>{item.status_text}</span>
+                  </td>
+                  <td>
                     <span>{item.available_hours}</span>
                   </td>
                   <td>
@@ -104,11 +109,20 @@ function StudentList({currentUser, ...props}) {
                     CurrentUserHelper.canPerform(currentUser) &&
                     <td>
                       {
+                        CurrentUserHelper.canPerform(currentUser, "admin", "scheduler") &&
+                        item.status == 0 && 
+                        <BeenhereOutlinedIcon onClick={(ev) => changeStatus(ev, item)} />
+                      }{
+                        CurrentUserHelper.canPerform(currentUser, "admin", "certifier") &&
+                        item.status == 1 && 
+                        <AssignmentIndRoundedIcon onClick={(ev) => changeStatus(ev, item)} />
+                      }
+                      {
                         item.assigned_hours === 0 &&
                         <DeleteIcon onClick={(ev) => deleteStudent(ev, item.id)}/>
                       }
                       {
-                        CurrentUserHelper.canPerform(currentUser, "admin", "treasurer") &&
+                        CurrentUserHelper.canPerform(currentUser, "admin", "treasurer", "certifier") &&
                         (
                           item.debtor
                           ? <AssignmentLateIcon color={"error"} onClick={(ev) => unmarkAsDebtor(ev, item.id)}/>
@@ -116,11 +130,11 @@ function StudentList({currentUser, ...props}) {
                         )
                       }
                       {
-                        CurrentUserHelper.canPerform(currentUser, "admin", "treasurer") &&
+                        CurrentUserHelper.canPerform(currentUser, "admin", "treasurer", "certifier") &&
                         <NewReleasesIcon onClick={(ev) => setFine(ev, item.id)}/>
                       }
                       {
-                        (CurrentUserHelper.canPerform(currentUser, "admin", "treasurer") && item.total_fines > 0) &&
+                        (CurrentUserHelper.canPerform(currentUser, "admin", "treasurer", "certifier") && item.total_fines > 0) &&
                         <AttachMoneyIcon onClick={(ev) => payFine(ev, item.id)}/>
                       }
                     </td>

@@ -51,7 +51,7 @@ class Main extends React.Component {
                 }
                 {
                   CurrentUserHelper.canPerform(this.state.currentUser) &&
-                  <Link className="nav-link" to={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>Estudiantes</Link>
+                  <Link className="nav-link" to={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer", "certifier") ? "/" : "/students"}>Estudiantes</Link>
                 }
                 {
                   CurrentUserHelper.canPerform(this.state.currentUser, "admin") &&
@@ -74,7 +74,7 @@ class Main extends React.Component {
           <Switch>
             {
               CurrentUserHelper.canPerform(this.state.currentUser) &&
-              <Route exact path={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>
+              <Route exact path={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer", "certifier") ? "/" : "/students"}>
                 <StudentForm />
               </Route>
             }

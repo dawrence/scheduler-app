@@ -6,10 +6,10 @@ class Student < ApplicationRecord
   LICENSE_B1 = 'b1'.freeze
   LICENSE_C1 = 'c1'.freeze
   FINE_VALUE = 15000.0.freeze
-
+  STATUS_ES = %w[Inscrito Activo Certificado].freeze
   extend Repeatable
 
-  has_many :appointments
+  has_many :appointments, dependent: :destroy
   has_many :fines
   has_many :action_logs
 
@@ -29,6 +29,8 @@ class Student < ApplicationRecord
   }.freeze
 
   before_save :set_available_hours
+  enum status: %i[inscribed active certified]
+
 
   def set_available_hours
     self.available_hours = AVAILABLE_HOURS[license_type.to_sym] || 0
@@ -79,5 +81,26 @@ class Student < ApplicationRecord
     self.update!(debtor: false)
   end
 
+  def status_text
+    STATUS_ES[Student.statuses[self.status]] || self.status
+  end
+
+  def next_status
+    case self.status
+    when "inscribed"
+      self.active!
+    when "active"
+      self.certified!
+    end
+  end
+
+  def self.status_count
+    self.statuses.map do |(status, status_value)|
+      {
+        status: STATUS_ES[status_value],
+        count: self.send(status).count
+      }
+    end
+  end
 
 end

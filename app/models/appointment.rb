@@ -127,4 +127,9 @@ class Appointment < ApplicationRecord
     self.title = "#{class_type_name} -
      #{license_type_name} - #{student.full_name}"
   end
+
+  def self.debtor_student_starts_in_few_days?
+    today = DateTime.now.localtime('-05:00').beginning_of_day
+    self.joins(:student).where(start_at: (today..(today+2.days)), students: {debtor: true}).size > 0
+  end
 end

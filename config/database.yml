@@ -23,6 +23,8 @@ default: &default
 
 development:
   <<: *default
+  user: postgres
+  password: admin
   database: scheduler-app-dev
 
   # The specified database role being used to connect to postgres.
