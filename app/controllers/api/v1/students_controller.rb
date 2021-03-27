@@ -5,10 +5,11 @@ module Api
     # :nodoc:
     class StudentsController < ApiController
       include Available
+      include Paginable
 
       def index
         if can_perform
-          @students = Student.all.order(created_at: :desc)
+          @students = Student.page(page).per(per_page).order(created_at: :desc)
 
           render json: @students
         else

@@ -7,6 +7,7 @@ ruby '2.5.1'
 
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'browser'
+gem 'kaminari'
 gem 'webpacker'
 gem 'goldiloader'
 gem 'rails-i18n'
