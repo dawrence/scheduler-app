@@ -129,7 +129,7 @@ class Appointment < ApplicationRecord
   end
 
   def self.debtor_student_starts_in_few_days?
-    today = DateTime.now.localtime('-05:00').beginning_of_day
-    self.joins(:student).where(start_at: (today..(today+2.days)), students: {debtor: true}).size > 0
+    today = Time.zone.now.beginning_of_day
+    joins(:student).where(start_at: (today..(today + 3.days)), students: {debtor: true}).size.positive?
   end
 end

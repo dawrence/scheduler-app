@@ -436,8 +436,8 @@ class StudentForm extends React.Component {
               this.setState({ openDialog: true, label: "Motivo por el que se genera la multa." });
               this.onAccept = () => this.setFineStudent(e, id);
             }}
-            changeStatus={(e, {debtor, id}) => {
-              if (debtor){
+            changeStatus={(e, {debtor, total_fines, id}) => {
+              if (debtor || total_fines > 0){
                 this.setState({ openDialog: true, label: "Estudiante moroso; justifique el cambio de estado." });
                 this.onAccept = () => this.changeSudentStatus(e, id);
               }

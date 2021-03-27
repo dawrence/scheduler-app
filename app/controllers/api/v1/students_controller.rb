@@ -68,7 +68,7 @@ module Api
         render json: student
       end
 
-      def change_Status
+      def change_status
         raise_unless_authorized(:admin, :scheduler, :certifier)
         student = Student.find_by!(id: params[:id])
         prev_status = student.status_text
@@ -76,7 +76,7 @@ module Api
         student.next_status
         current_user.action_logs.create({
           student: student,
-          action: "Cambió de #{prev_status} a #{student.status_text}", 
+          action: "Cambió de #{prev_status} a #{student.status_text}",
           content: params[:content]
         }) if params[:content].present?
         render json: student

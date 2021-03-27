@@ -185,14 +185,12 @@ export default class AppScheduler extends React.PureComponent {
       data: [],
       vehicles: [],
       currentViewName: 'Month',
-      notifyCloseDebtors: false,
       appointmentMeta: {
         target: null,
         data: {},
       },
     };
-    
-    this.fetchCloseDebtorsNotification = this.fetchCloseDebtorsNotification.bind(this);
+
     this.fetchAppointments = this.fetchAppointments.bind(this);
     this.fetchVehicles = this.fetchVehicles.bind(this);
     this.commitChanges = this.commitChanges.bind(this);
@@ -210,7 +208,6 @@ export default class AppScheduler extends React.PureComponent {
 
 
   componentDidMount() {
-    this.fetchCloseDebtorsNotification();
     this.fetchVehicles();
     this.fetchAppointments();
   }
@@ -252,21 +249,6 @@ export default class AppScheduler extends React.PureComponent {
         this.fetchAppointments();
       }).catch(this.handleError)
     }
-  }
-
-  fetchCloseDebtorsNotification() {
-    this.setState({ loading: true })
-    axios.get("/api/v1/appointments/with/debtor/student", {})
-      .then(({ data }) => {
-        this.setState({
-          loading: false,
-          ...data,
-        })
-      })
-      .catch((error) => {
-        this.setState({ loading: false })
-        alert(error)
-      });
   }
 
   deleteAppoinment(params) {
@@ -411,12 +393,6 @@ export default class AppScheduler extends React.PureComponent {
           <CircularProgress color="inherit" />
         </BackdropStyled>
         <Filter filter={this.handleFilter} filterWithId={this.handleFilterWithId}/>
-        {
-          this.state.notifyCloseDebtors &&
-          <Link to="/students">
-            <Alert severity="error">Hay estudiantes morosos próximos a iniciar clases</Alert>
-          </Link>
-        }
         <ToggleButtonGroup
           value={this.state.currentGroup}
           exclusive
@@ -430,7 +406,7 @@ export default class AppScheduler extends React.PureComponent {
             Moto
           </ToggleButton>
         </ToggleButtonGroup>
-        
+
         <React.Fragment>
           <ExternalViewSwitcher
             currentViewName={currentViewName}
