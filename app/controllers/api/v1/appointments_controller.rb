@@ -72,6 +72,11 @@ module Api
         render json: {}
       end
 
+      def debtor_student_starts_in_few_days
+        response = Appointment.debtor_student_starts_in_few_days?
+        render json: { notifyCloseDebtors: response }
+      end
+
       private
 
       def iso_start_at

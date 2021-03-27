@@ -5,7 +5,7 @@ import Radio from '@material-ui/core/Radio';
 import moment from 'moment';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
-import MoreIcon from '@material-ui/icons/MoreVert';
+import Alert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
 import axios from 'axios';
 import Room from '@material-ui/icons/Room';
@@ -19,6 +19,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { styled } from '@material-ui/core/styles';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import { ViewState, EditingState, IntegratedGrouping, GroupingState, IntegratedEditing} from '@devexpress/dx-react-scheduler';
 import {
   Scheduler,
@@ -35,6 +36,10 @@ import {
   DayView
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { withStyles } from '@material-ui/core/styles';
+import {
+  Link
+} from "react-router-dom";
+import { makeStyles } from '@material-ui/core/styles';
 
 import SchedulerForm from './SchedulerForm';
 
@@ -63,6 +68,33 @@ const style = ({ palette }) => ({
   },
 });
 
+const useStyles = makeStyles(theme => ({
+  todayCell: {
+    backgroundColor: fade(theme.palette.primary.main, 0.1),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.primary.main, 0.14),
+    },
+    '&:focus': {
+      backgroundColor: fade(theme.palette.primary.main, 0.16),
+    },
+  },
+  weekendCell: {
+    backgroundColor: fade(theme.palette.action.disabledBackground, 0.04),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.action.disabledBackground, 0.04),
+    },
+    '&:focus': {
+      backgroundColor: fade(theme.palette.action.disabledBackground, 0.04),
+    },
+  },
+  today: {
+    backgroundColor: fade(theme.palette.primary.main, 0.16),
+  },
+  weekend: {
+    backgroundColor: fade(theme.palette.action.disabledBackground, 0.06),
+  },
+}));
+
 const styles = theme => ({
   button: {
     color: theme.palette.background.default,
@@ -78,6 +110,29 @@ const styles = theme => ({
 
 const messages = {
   moreInformationLabel: '',
+};
+
+const WeekTimeTableCell = (props) => {
+  const classes = useStyles();
+  const { startDate } = props;
+  const date = new Date(startDate);
+
+  if (date.getDate() === new Date().getDate()) {
+    return <WeekView.TimeTableCell {...props} className={classes.todayCell} />;
+  } if (date.getDay() === 0 || date.getDay() === 6) {
+    return <WeekView.TimeTableCell {...props} className={classes.weekendCell} />;
+  } return <WeekView.TimeTableCell {...props} />;
+};
+
+const DayScaleCell = (props) => {
+  const classes = useStyles();
+  const { startDate, today } = props;
+
+  if (today) {
+    return <WeekView.DayScaleCell {...props} className={classes.today} />;
+  } if (startDate.getDay() === 0 || startDate.getDay() === 6) {
+    return <WeekView.DayScaleCell {...props} className={classes.weekend} />;
+  } return <WeekView.DayScaleCell {...props} />;
 };
 
 const ExternalViewSwitcher = ({
@@ -188,9 +243,9 @@ export default class AppScheduler extends React.PureComponent {
         data: {},
       },
     };
-    this.fetchVehicles();
-    this.fetchAppointments();
+
     this.fetchAppointments = this.fetchAppointments.bind(this);
+    this.fetchVehicles = this.fetchVehicles.bind(this);
     this.commitChanges = this.commitChanges.bind(this);
     this.saveAppointment = this.saveAppointment.bind(this);
     this.toggleVisibility = this.toggleVisibility.bind(this);
@@ -202,6 +257,12 @@ export default class AppScheduler extends React.PureComponent {
     this.onCurrentDateChange = this.onCurrentDateChange.bind(this);
     this.handleError = this.handleError.bind(this);
     this.handleGroupChange = this.handleGroupChange.bind(this);
+  }
+
+
+  componentDidMount() {
+    this.fetchVehicles();
+    this.fetchAppointments();
   }
 
   handleError(res) {
@@ -398,6 +459,7 @@ export default class AppScheduler extends React.PureComponent {
             Moto
           </ToggleButton>
         </ToggleButtonGroup>
+
         <React.Fragment>
           <ExternalViewSwitcher
             currentViewName={currentViewName}
@@ -420,9 +482,12 @@ export default class AppScheduler extends React.PureComponent {
               <WeekView
                 startDayHour={5}
                 endDayHour={23}
+                timeTableCellComponent={WeekTimeTableCell}
+                dayScaleCellComponent={DayScaleCell}
               />
               <MonthView
                 timeTableCellComponent={TimeTableCell}
+                dayScaleCellComponent={DayScaleCell}
               />
               <Toolbar />
               <DateNavigator />

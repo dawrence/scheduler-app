@@ -7,6 +7,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { styled } from '@material-ui/core/styles';
 import axios from 'axios';
 import DateFnsUtils from '@date-io/date-fns';
+import { Typography } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -31,6 +33,7 @@ class StudentForm extends React.Component {
         license_type: '',
         available_hours: 0
       },
+      statusCount: [],
       reportStartDate: null,
       reportEndDate: null,
       error: null,
@@ -45,6 +48,7 @@ class StudentForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchItems = this.fetchItems.bind(this);
     this.fetchCurrentUser = this.fetchCurrentUser.bind(this);
+    this.fetchStatusCount = this.fetchStatusCount.bind(this);
     this.selectStudent = this.selectStudent.bind(this);
     this.newRecord = this.newRecord.bind(this);
     this.deleteStudent = this.deleteStudent.bind(this);
@@ -52,6 +56,7 @@ class StudentForm extends React.Component {
     this.unmarkStudent = this.unmarkStudent.bind(this);
     this.setFineStudent = this.setFineStudent.bind(this);
     this.payFineStudent = this.payFineStudent.bind(this);
+    this.changeSudentStatus = this.changeSudentStatus.bind(this);
     this.closeDialog = this.closeDialog.bind(this);
     this.onChangeJustification = this.onChangeJustification.bind(this);
     this.resetDialogJustification = this.resetDialogJustification.bind(this);
@@ -92,7 +97,7 @@ class StudentForm extends React.Component {
   fetchCurrentUser() {
     this.setState({ loading: true })
     axios.get("/api/v1/active_user", {})
-      .then(({data}) => {
+      .then(({ data }) => {
         this.setState({
           loading: false,
           currentUser: data,
@@ -101,7 +106,22 @@ class StudentForm extends React.Component {
       .catch((error) => {
         this.setState({ loading: false })
         alert(error)
-      } );
+      });
+  }
+
+  fetchStatusCount() {
+    this.setState({ loading: true })
+    axios.get("/api/v1/students/status/count", {})
+      .then(({ data }) => {
+        this.setState({
+          loading: false,
+          statusCount: data,
+        })
+      })
+      .catch((error) => {
+        this.setState({ loading: false })
+        alert(error)
+      });
   }
 
   markStudent(e, id) {
@@ -133,6 +153,19 @@ class StudentForm extends React.Component {
   setFineStudent(e, id) {
     this.setState({ loading: true })
     return axios.post(`/api/v1/students/${id}/fine/set`, { content: this.state.justification }).then(() => {
+      this.setState({ loading: false })
+      this.resetDialogJustification();
+      this.fetchItems();
+      this.forceUpdate();
+    }).catch((error) => {
+      this.setState({ loading: false })
+      alert(error)
+    });
+  }
+
+  changeSudentStatus(e, id) {
+    this.setState({ loading: true })
+    return axios.post(`/api/v1/students/${id}/status/next`, { content: this.state.justification }).then(() => {
       this.setState({ loading: false })
       this.resetDialogJustification();
       this.fetchItems();
@@ -196,6 +229,7 @@ class StudentForm extends React.Component {
   componentDidMount(){
     this.fetchItems();
     this.fetchCurrentUser();
+    this.fetchStatusCount();
   }
 
   fetchItems(){
@@ -369,6 +403,16 @@ class StudentForm extends React.Component {
           </div>
         </div>
         <div className="col-12" style={{overflow: 'auto', height: '300px'}}>
+          <div style={{ display: 'flex' }}>
+            {
+              this.state.statusCount.map(({ status, count }, index) => (
+                <Paper key={index} style={{ display: 'flex', flexDirection: 'column', marginRight: '1rem', marginBottom: '1rem', padding: '0.5rem', alignItems: 'center' }} elevation={1}>
+                  <Typography color="primary">{status}s</Typography>
+                  <Typography>{count} Estudiante{count != 1 && "s"}</Typography>
+                </Paper>
+              ))
+            }
+          </div>
           <StudentList
             currentUser={this.state.currentUser}
             items={this.state.students}
@@ -391,6 +435,13 @@ class StudentForm extends React.Component {
             setFine={(e, id) => {
               this.setState({ openDialog: true, label: "Motivo por el que se genera la multa." });
               this.onAccept = () => this.setFineStudent(e, id);
+            }}
+            changeStatus={(e, {debtor, total_fines, id}) => {
+              if (debtor || total_fines > 0){
+                this.setState({ openDialog: true, label: "Estudiante moroso; justifique el cambio de estado." });
+                this.onAccept = () => this.changeSudentStatus(e, id);
+              }
+              else this.changeSudentStatus(e, id);
             }}
           />
         </div>

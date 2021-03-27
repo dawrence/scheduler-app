@@ -113,7 +113,7 @@ class InstructorForm extends React.Component {
     return (
       <>
         {
-          CurrentUserHelper.canPerform(this.state.currentUser, "admin", "treasurer") &&
+          CurrentUserHelper.canPerform(this.state.currentUser, "admin", "treasurer", "certifier") &&
           <div className="col-12 row">
             <div className="col-12">
               <form onSubmit={this.handleSubmit}>
@@ -196,7 +196,7 @@ class InstructorForm extends React.Component {
           </div>
         }
         {
-          CurrentUserHelper.canPerform(this.state.currentUser, "admin", "treasurer") &&
+          CurrentUserHelper.canPerform(this.state.currentUser, "admin", "treasurer", "certifier") &&
           <div className="col-12" style={{overflow: 'auto'}}>
             <InstructorList
               items={this.state.instructors}

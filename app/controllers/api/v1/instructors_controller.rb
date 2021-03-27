@@ -7,7 +7,7 @@ module Api
       include Available
 
       def index
-        if can_perform(:admin, :treasurer)
+        if can_perform(:admin, :treasurer, :certifier)
           @instructors = Instructor.all.order(created_at: :desc)
 
           render json: @instructors
@@ -17,20 +17,20 @@ module Api
       end
 
       def create
-        raise_unless_authorized(:admin, :treasurer)
+        raise_unless_authorized(:admin, :treasurer, :certifier)
         instructor = Instructor.create!(safe_params)
         render json: instructor
       end
 
       def update
-        raise_unless_authorized(:admin, :treasurer)
+        raise_unless_authorized(:admin, :treasurer, :certifier)
         instructor = Instructor.find_by!(id: params[:id])
         instructor.update!(safe_params)
         render json: instructor
       end
 
       def destroy
-        raise_unless_authorized(:admin, :treasurer)
+        raise_unless_authorized(:admin, :treasurer, :certifier)
         instructor = Instructor.find_by!(id: params[:id])
         instructor.destroy!
         render json: {}

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_13_110148) do
+ActiveRecord::Schema.define(version: 2021_03_27_125222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,6 +74,7 @@ ActiveRecord::Schema.define(version: 2021_03_13_110148) do
     t.string "id_number", null: false
     t.integer "available_hours", default: 0
     t.boolean "debtor", default: false
+    t.integer "status", default: 0
   end
 
   create_table "users", force: :cascade do |t|
@@ -93,7 +94,7 @@ ActiveRecord::Schema.define(version: 2021_03_13_110148) do
     t.string "plate", null: false
     t.string "status"
     t.integer "available_hours", default: 0
-    t.string "type", null: false
+    t.string "type", default: "car", null: false
     t.json "additional_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

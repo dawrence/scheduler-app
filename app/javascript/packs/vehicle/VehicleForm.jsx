@@ -82,8 +82,6 @@ const ColorPickerInput = ({value, onChange}) =>{
 }
 
 const DayTimePicker = ({ schedule, dayNumber, dayName, onSelect}) => {
-  if (typeof schedule !== "string") console.log(parse(schedule.from, "hh:mm aaa", new Date()))
-  if (typeof schedule !== "string") console.log(parse(schedule.to, "hh:mm aaa", new Date()))
   const classes = useStyles();
   const [fromTime, setFromTime] = React.useState(
     typeof schedule === 'string' ? new Date() : parse(schedule.from, "hh:mm aaa", new Date())

@@ -5,6 +5,10 @@ import ActionLogList from './ActionLog/ActionLogList'
 import InstructorForm from './instructor/InstructorForm'
 import StudentForm from './student/StudentForm'
 import VehicleForm from './vehicle/VehicleForm'
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import CurrentUserHelper from './helpers/CurrentUserHelper';
 import axios from 'axios';
 import { Navbar, Nav } from 'react-bootstrap';
@@ -19,8 +23,27 @@ import {
 class Main extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      open: true,
+      notifyCloseDebtors: false
+    }
     this.fetchCurrentUser = this.fetchCurrentUser.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+  }
+
+  fetchCloseDebtorsNotification() {
+    this.setState({ loading: true })
+    axios.get("/api/v1/appointments/with/debtor/student", {})
+      .then(({ data }) => {
+        this.setState({
+          loading: false,
+          ...data,
+        })
+      })
+      .catch((error) => {
+        this.setState({ loading: false })
+        alert(error)
+      });
   }
 
   fetchCurrentUser() {
@@ -34,13 +57,43 @@ class Main extends React.Component {
   }
 
   componentDidMount() {
+    this.fetchCloseDebtorsNotification();
     this.fetchCurrentUser();
+  }
+  handleClose (event, reason){
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.setState({ open: false });
   }
 
   render(){
     return (
       <Router>
         <div>
+          <Snackbar
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={this.state.open && this.state.notifyCloseDebtors}
+            autoHideDuration={6000}
+            onClose={this.handleClose}
+            action={
+              <React.Fragment>
+                <Alert severity="warning">
+                  <AlertTitle>Alerta</AlertTitle>
+                  <Link to="/students">
+                    Hay estudiantes morosos próximos a iniciar clases
+                  </Link>
+                </Alert>
+                <IconButton size="small" aria-label="close" color="inherit" onClick={this.handleClose}>
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </React.Fragment>
+            }
+          />
           <Navbar collapseOnSelect bg="light" expand="lg">
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
@@ -51,7 +104,7 @@ class Main extends React.Component {
                 }
                 {
                   CurrentUserHelper.canPerform(this.state.currentUser) &&
-                  <Link className="nav-link" to={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>Estudiantes</Link>
+                  <Link className="nav-link" to={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer", "certifier") ? "/" : "/students"}>Estudiantes</Link>
                 }
                 {
                   CurrentUserHelper.canPerform(this.state.currentUser, "admin") &&
@@ -74,7 +127,7 @@ class Main extends React.Component {
           <Switch>
             {
               CurrentUserHelper.canPerform(this.state.currentUser) &&
-              <Route exact path={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer") ? "/" : "/students"}>
+              <Route exact path={CurrentUserHelper.canPerform(this.state.currentUser, "treasurer", "certifier") ? "/" : "/students"}>
                 <StudentForm />
               </Route>
             }
