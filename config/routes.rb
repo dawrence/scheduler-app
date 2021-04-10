@@ -38,6 +38,7 @@ Rails.application.routes.draw do
         post :change_status, on: :member, path: 'status/next'
         delete :delete_appointments, on: :member, path: 'appointments/delete'
         get :status_count, on: :collection, path: 'status/count'
+        get :license_count, on: :collection, path: 'license/count'
       end
       namespace :students do
         get 'available'

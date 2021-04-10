@@ -34,6 +34,7 @@ class StudentForm extends React.Component {
         available_hours: 0
       },
       statusCount: [],
+      licenseCount: [],
       reportStartDate: null,
       reportEndDate: null,
       error: null,
@@ -49,6 +50,7 @@ class StudentForm extends React.Component {
     this.fetchItems = this.fetchItems.bind(this);
     this.fetchCurrentUser = this.fetchCurrentUser.bind(this);
     this.fetchStatusCount = this.fetchStatusCount.bind(this);
+    this.fetchLicenseCount = this.fetchLicenseCount.bind(this);
     this.selectStudent = this.selectStudent.bind(this);
     this.newRecord = this.newRecord.bind(this);
     this.deleteStudent = this.deleteStudent.bind(this);
@@ -122,6 +124,21 @@ class StudentForm extends React.Component {
         this.setState({ loading: false })
       });
   }
+
+  fetchLicenseCount() {
+    this.setState({ loading: true })
+    axios.get("/api/v1/students/license/count", {})
+      .then(({ data }) => {
+        this.setState({
+          loading: false,
+          licenseCount: data,
+        })
+      })
+      .catch((error) => {
+        this.setState({ loading: false })
+      });
+  }
+
 
   markStudent(e, id) {
     this.setState({ loading: true })
@@ -229,6 +246,7 @@ class StudentForm extends React.Component {
     this.fetchItems();
     this.fetchCurrentUser();
     this.fetchStatusCount();
+    this.fetchLicenseCount();
   }
 
   fetchItems(){
@@ -407,6 +425,16 @@ class StudentForm extends React.Component {
               this.state.statusCount.map(({ status, count }, index) => (
                 <Paper key={index} style={{ display: 'flex', flexDirection: 'column', marginRight: '1rem', marginBottom: '1rem', padding: '0.5rem', alignItems: 'center' }} elevation={1}>
                   <Typography color="primary">{status}s</Typography>
+                  <Typography>{count} Estudiante{count != 1 && "s"}</Typography>
+                </Paper>
+              ))
+            }
+          </div>
+          <div style={{ display: 'flex' }}>
+            {
+              this.state.licenseCount.map(({ license, count }, index) => (
+                <Paper key={index} style={{ display: 'flex', flexDirection: 'column', marginRight: '1rem', marginBottom: '1rem', padding: '0.5rem', alignItems: 'center' }} elevation={1}>
+                  <Typography color="primary">{license}</Typography>
                   <Typography>{count} Estudiante{count != 1 && "s"}</Typography>
                 </Paper>
               ))

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import BeenhereOutlinedIcon from '@material-ui/icons/BeenhereOutlined';
@@ -89,7 +90,6 @@ function StudentList({currentUser, ...props}) {
                       <TableRow
                         key={`student-${item.id}`}
                         className={item.is_debtor_or_has_fines ? classes.restrictedStudent : {}}
-                        onClick={(e) => selectStudent(item)}
                       >
                         <TableCell align="right"><a href={`/students/${item.id}`} target='_blank'>{item.full_name}</a></TableCell>
                         <TableCell align="right">{item.id_number}</TableCell>
@@ -107,6 +107,10 @@ function StudentList({currentUser, ...props}) {
                         {
                           CurrentUserHelper.canPerform(currentUser) &&
                           <TableCell align="right">
+                            {
+                              CurrentUserHelper.canPerform(currentUser, "admin", "scheduler", "treasurer") &&
+                              <EditIcon onClick={(e) => selectStudent(item)} />
+                            }
                             {
                               CurrentUserHelper.canPerform(currentUser, "admin", "scheduler", "certifier") &&
                               item.status == 0 &&

@@ -103,4 +103,12 @@ class Student < ApplicationRecord
     end
   end
 
+  def self.license_count
+    [LICENSE_B1, LICENSE_C1, LICENSE_A2].map do |license|
+      {
+        license: license,
+        count:  Student.where("license_type ILIKE '%#{license}%'").count
+      }
+    end
+  end
 end

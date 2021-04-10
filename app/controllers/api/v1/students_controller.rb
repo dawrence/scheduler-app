@@ -88,6 +88,11 @@ module Api
         render json: Student.status_count
       end
 
+      def license_count
+        raise_unless_authorized(:admin, :scheduler, :certifier)
+        render json: Student.license_count
+      end
+
       def delete_appointments
         raise_unless_authorized(:admin, :scheduler)
         student = Student.find_by!(id: params[:id])

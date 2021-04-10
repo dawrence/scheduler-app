@@ -469,6 +469,7 @@ export default class AppScheduler extends React.PureComponent {
             <Scheduler
               data={data}
               height={660}
+              locale='es-ES'
             >
               <ViewState
                 currentDate={currentDate}
