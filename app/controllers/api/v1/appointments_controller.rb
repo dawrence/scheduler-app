@@ -29,10 +29,10 @@ module Api
           instructor_id: instructor&.id,
           vehicle_id: vehicle&.id,
           student_id: student&.id,
-          start_at: iso_start_at,
+          start_at: iso_start_at.at_beginning_of_minute,
           license_type: safe_params[:license_type],
           class_type: safe_params[:class_type],
-          end_at: iso_end_at
+          end_at: iso_end_at.at_beginning_of_minute
         )
 
         if appointment.save
@@ -55,8 +55,8 @@ module Api
           student_id: student&.id || appointment.student_id,
           license_type: safe_params[:license_type] || appointment.license_type,
           class_type: safe_params[:class_type] || appointment.class_type,
-          start_at: start_at,
-          end_at: end_at
+          start_at: start_at.at_beginning_of_minute,
+          end_at: end_at.at_beginning_of_minute
         )
 
         if appointment.errors.present?
