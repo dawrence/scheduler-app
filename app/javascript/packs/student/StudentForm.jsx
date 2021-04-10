@@ -228,6 +228,7 @@ class StudentForm extends React.Component {
       .then(({ data }) => {
         this.setState({ loading: false, student: data })
         this.fetchItems();
+        this.newRecord();
         this.forceUpdate();
       })
       .catch((error) => {
