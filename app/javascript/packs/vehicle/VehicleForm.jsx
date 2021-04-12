@@ -83,13 +83,16 @@ const ColorPickerInput = ({value, onChange}) =>{
 
 const DayTimePicker = ({ schedule, dayNumber, dayName, onSelect}) => {
   const classes = useStyles();
-  const [fromTime, setFromTime] = React.useState(
-    typeof schedule === 'string' ? new Date() : parse(schedule.from, "hh:mm aaa", new Date())
-  );
-  const [toTime, setToTime] = React.useState(
-    typeof schedule === 'string' ? new Date() : parse(schedule.to, "hh:mm aaa", new Date())
-  );
-  const [rangeType, changeRangeType] = React.useState(typeof schedule !== 'string');
+  const [fromTime, setFromTime] = React.useState(new Date());
+  const [toTime, setToTime] = React.useState(new Date());
+  const [rangeType, changeRangeType] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof schedule !== 'string'){
+      changeRangeType(true);
+      setToTime(parse(schedule.to, "hh:mm aaa", new Date()));
+      setFromTime(parse(schedule.from, "hh:mm aaa", new Date()));
+    }
+  }, [])
   React.useEffect(() => {
     const period = {
       from: format(fromTime, "hh:mm aaa"), 
@@ -240,7 +243,7 @@ class VehicleForm extends React.Component {
     this.fetchItems();
   }
 
-  fetchItems(){
+  fetchItems() {
     axios.get("/api/v1/vehicles")
       .then(({ data }) => {
         this.setState({
@@ -352,6 +355,7 @@ class VehicleForm extends React.Component {
                         </div>
                         <div className="col m12 offset-m1">
                           <DaysList 
+                            key={`vehicle-${this.state.vehicle.id}`}
                             schedule={this.state.vehicle.schedule} 
                             onSelect={this.handleScheduleSelection}
                           />

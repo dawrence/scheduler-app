@@ -5,6 +5,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container'
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+
 const useStyles = makeStyles({
   actionLogLine: {
     marginTop: '1rem',
@@ -17,13 +26,20 @@ const useStyles = makeStyles({
   },
   actionLogSegment: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   actionLogText:{
     marginRight: '0.2rem'
   },
   actionLogDate: {
     fontSize: '0.75rem'
+  },
+  autocompleteFilter: { 
+    flex: 1, 
+    margin: '0 0.5rem',
+    '& input.MuiInputBase-input.MuiOutlinedInput-input.MuiAutocomplete-input': {
+      height: '2rem'
+    }
   }
 });
 
@@ -51,11 +67,28 @@ const ActionLogLine = ({ actionLog }) => {
         <Typography className={classes.actionLogText} color="colorPrimary">
           Justificación:
         </Typography>
-        <Typography className={classes.actionLogText} color="textSecondary">
+        <Typography style={{ whiteSpace: 'pre-line'}} className={classes.actionLogText} color="textSecondary">
           {actionLog.content}
         </Typography>
       </div>
     </Paper>
+  );
+}
+
+const AutocompleteFilter = ({ options, label, value, onChange}) => {
+  const classes = useStyles();
+  return (
+    <Autocomplete
+      className={classes.autocompleteFilter}
+      clearOnEscape
+      openOnFocus
+      options={options}
+      value={value}
+      getOptionLabel={(option) => option.text}
+      onChange={onChange}
+      size="small"
+      renderInput={(params) => <TextField {...params} style={{}} label={label} margin="normal" variant="outlined" />}
+    />
   );
 }
 
@@ -65,10 +98,20 @@ class ActionLogList extends React.Component {
     this.state = {
       error: null,
       actionLogs: [],
-      loaded: false
+      loaded: false,
+      userFilter: null,
+      studentFilter: null,
+      filterResources: {
+        students: [],
+        users: []
+      }
     };
     this.fetchItems = this.fetchItems.bind(this);
+    this.filterItems = this.filterItems.bind(this);
+    this.fetchFilterResources = this.fetchFilterResources.bind(this);
     this.fetchCurrentUser = this.fetchCurrentUser.bind(this);
+    this.handleChangeUser = this.handleChangeUser.bind(this);
+    this.handleChangeStudent = this.handleChangeStudent.bind(this);
   }
 
   fetchCurrentUser() {
@@ -83,6 +126,7 @@ class ActionLogList extends React.Component {
 
   componentDidMount() {
     this.fetchItems();
+    this.fetchFilterResources();
     this.fetchCurrentUser();
   }
 
@@ -97,9 +141,69 @@ class ActionLogList extends React.Component {
       .catch((error) => alert(error));
   }
 
+  filterItems() {
+    axios.post("/api/v1/action_logs/filter", {
+      student: this.state.studentFilter?.value,
+      user: this.state.userFilter?.value
+    })
+    .then(({ data }) => {
+      this.setState({
+        actionLogs: data,
+        loaded: true
+      })
+    })
+    .catch((error) => alert(error));
+  }
+
+  fetchFilterResources() {
+    axios.get("/api/v1/action_logs/filter_resources")
+      .then(({ data }) => {
+        this.setState({
+          filterResources: data,
+          loaded: true
+        })
+      })
+      .catch((error) => alert(error));
+  }
+
+  handleChangeUser = (event, userFilter) => {
+    this.setState({ userFilter });
+  };
+
+  handleChangeStudent = (event, studentFilter) => {
+    this.setState({ studentFilter });
+  };
+
   render() {
     return (
       <Container >
+        <Card>
+          <CardContent>
+            <Typography color="textPrimary" gutterBottom>
+              Filtros
+            </Typography>
+            <Box style={{display: 'flex'}}>
+              <AutocompleteFilter
+                value={this.state.userFilter}
+                options={this.state.filterResources.users}
+                onChange={this.handleChangeUser}
+                label="Usuario responsable"
+              />
+              <AutocompleteFilter
+                value={this.state.studentFilter}
+                options={this.state.filterResources.students}
+                onChange={this.handleChangeStudent}
+                label="Estudiante"
+              />
+            </Box>
+          </CardContent>
+          <CardActions>
+            <Button onClick={this.filterItems} variant="outlined" color="primary">
+              Filtrar
+            </Button>
+          </CardActions>
+        </Card>
+        
         {
           CurrentUserHelper.canPerform(this.state.currentUser) &&
             this.state.actionLogs.map(item => {

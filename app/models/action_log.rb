@@ -1,5 +1,9 @@
 class ActionLog < ApplicationRecord
 
+  ACTIONS = {
+    debtor: ->(action:){return {message: action, action: 'moroso'}}
+  }.freeze
+
   belongs_to :student
   belongs_to :user
 
