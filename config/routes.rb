@@ -18,6 +18,10 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get :active_user, to: 'users#active_user'
+      resources :cash_flows, only: %i[create]  do
+        get :students, on: :collection
+        get :filter, on: :collection, path: 'filter/:student_id'
+      end
       resources :action_logs, only: %i[index]
       resources :appointments, only: %i[index create destroy update] do
         get :debtor_student_starts_in_few_days, on: :collection, path: 'with/debtor/student'

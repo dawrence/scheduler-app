@@ -1,4 +1,5 @@
 class Fine < ApplicationRecord
+  VALUE = 15000.0.freeze
 
   belongs_to :student
 
@@ -10,5 +11,6 @@ class Fine < ApplicationRecord
 
   def pay
     self.update(paid: true)
+    self.student.cash_flows.create(kind: 'pay', amount: VALUE, concept: 'Pagó de multa')
   end
 end

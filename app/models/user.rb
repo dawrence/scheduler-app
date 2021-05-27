@@ -6,4 +6,5 @@ class User < ApplicationRecord
   enum role: %i[ admin scheduler treasurer student certifier ]
 
   has_many :action_logs
+  has_many :cash_flows
 end

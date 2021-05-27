@@ -5,12 +5,12 @@ class Student < ApplicationRecord
   LICENSE_A2 = 'a2'.freeze
   LICENSE_B1 = 'b1'.freeze
   LICENSE_C1 = 'c1'.freeze
-  FINE_VALUE = 15000.0.freeze
   STATUS_ES = %w[Inscrito Activo Certificado].freeze
   extend Repeatable
 
   has_many :appointments, dependent: :destroy
   has_many :fines
+  has_many :cash_flows
   has_many :action_logs
 
   validates :license_type, inclusion: { in: %w[a2 b1 c1 a2b1 a2c1] }
@@ -66,7 +66,8 @@ class Student < ApplicationRecord
   end
 
   def set_fine
-    self.fines.create!(value: FINE_VALUE)
+    self.fines.create!(value: Fine::VALUE)
+    self.cash_flows.set_fine
   end
 
   def pay_fine
