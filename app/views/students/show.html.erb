@@ -6,7 +6,7 @@
   </div>
   <div class='row'>
     <div class="col-3"><strong>Fecha:</strong></div>
-    <div class="col-9"><span><%=I18n.l(Date.today, format: '%A, %b %e')%></span></div>
+    <div class="col-9"><span><%=I18n.l(Date.today.in_time_zone(zone), format: '%A, %b %e')%></span></div>
   </div>
   <div class='row'>
     <div class="col-3"><strong>Categoria:</strong></div>

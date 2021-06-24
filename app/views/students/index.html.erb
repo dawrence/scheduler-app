@@ -15,7 +15,7 @@
         <tbody>
           <% s.appointments.where(start_at: @start_at..@end_at).each_with_index do |app, i| %>
             <tr>
-              <th scope="row"><%=I18n.l(app.start_at, format: '%A, %b %e')%></th>
+              <th scope="row"><%=I18n.l(app.start_at.in_time_zone(zone), format: '%A, %b %e')%></th>
               <td><%= app.display_hour %></td>
               <td><%= app.instructor.full_name %></td>
               <td><%= app.vehicle.plate %></td>
