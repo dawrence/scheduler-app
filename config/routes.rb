@@ -18,7 +18,10 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get :active_user, to: 'users#active_user'
-      resources :action_logs, only: %i[index]
+      resources :action_logs, only: %i[index] do
+        get :filter_resources, on: :collection
+        post :filter, on: :collection
+      end
       resources :appointments, only: %i[index create destroy update] do
         get :debtor_student_starts_in_few_days, on: :collection, path: 'with/debtor/student'
       end
