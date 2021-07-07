@@ -12,6 +12,7 @@
     "axios": "^0.21.1",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "bootstrap": "4.5.3",
+    "capitalize": "^2.0.3",
     "date-fns": "^2.19.0",
     "material-ui-color": "^0.4.11",
     "material-ui-popup-state": "^1.5.3",

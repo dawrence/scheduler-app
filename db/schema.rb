@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_27_125222) do
+ActiveRecord::Schema.define(version: 2021_04_24_052915) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,6 +40,16 @@ ActiveRecord::Schema.define(version: 2021_03_27_125222) do
     t.boolean "test", default: false
     t.string "license_type"
     t.string "class_type", default: "practice"
+  end
+
+  create_table "cash_flows", force: :cascade do |t|
+    t.float "amount", default: 0.0
+    t.string "concept"
+    t.integer "kind", default: 0
+    t.integer "student_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["student_id"], name: "index_cash_flows_on_student_id"
   end
 
   create_table "fines", force: :cascade do |t|
@@ -94,7 +104,7 @@ ActiveRecord::Schema.define(version: 2021_03_27_125222) do
     t.string "plate", null: false
     t.string "status"
     t.integer "available_hours", default: 0
-    t.string "type", default: "car", null: false
+    t.string "type", null: false
     t.json "additional_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
