@@ -9,7 +9,7 @@ module Api
 
       def index
         if can_perform
-          @students = Student.all.order(created_at: :desc)
+          @students = Student.all.order(created_at: :desc).limit(500)
 
           render json: @students
         else
