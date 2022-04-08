@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       end
       namespace :students do
         get 'available'
+        get 'list'
       end
     end
   end

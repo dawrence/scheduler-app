@@ -58,7 +58,7 @@ class Filter extends React.Component {
   }
 
   fetchStudents(){
-    axios.get('/api/v1/students/', {})
+    axios.get('/api/v1/students/list', {})
       .then(({data}) => {
         this.setState({ students: data });
       })

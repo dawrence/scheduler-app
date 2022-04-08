@@ -17,6 +17,17 @@ module Api
         end
       end
 
+      # ewww refactor this shit
+      def list
+        if can_perform
+          @students = Student.all.order(created_at: :desc).limit(500)
+
+          render json: @students, each_serializer: StudentRawSerializer
+        else
+          render json: Student.none
+        end
+      end
+
       def create
           raise_unless_authorized(:admin, :scheduler, :treasurer, :certifier)
           student = Student.create!(safe_params)

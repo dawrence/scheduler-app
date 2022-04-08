@@ -4,7 +4,7 @@ class AppointmentSerializer < ActiveModel::Serializer
              :student_id, :license_type, :class_type
 
   belongs_to :instructor
-  belongs_to :student
+  belongs_to :student, serializer: StudentRawSerializer
   belongs_to :vehicle
 
   def startDate
