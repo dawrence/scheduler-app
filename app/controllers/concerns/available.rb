@@ -9,9 +9,11 @@ module Available
     start_time = Time.iso8601(CGI.unescape(params[:start_at])).change(sec: 0)
     end_time = Time.iso8601(CGI.unescape(params[:end_at])).change(sec: 0)
 
-    (vehicle.present? ? model_by_vehicle : model)
+    query = (vehicle.present? ? model_by_vehicle : model)
       .without_appointments(start_time, end_time)
       .order(created_at: :desc)
+
+    model == Student ? query.limit(500) : query
   end
 
   def vehicle
