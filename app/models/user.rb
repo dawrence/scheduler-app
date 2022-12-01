@@ -4,6 +4,5 @@ class User < ApplicationRecord
   devise :database_authenticatable,
          :rememberable, :validatable#, :recoverable, :registerable,
   enum role: %i[admin scheduler treasurer student certifier]
-
   has_many :action_logs
 end
